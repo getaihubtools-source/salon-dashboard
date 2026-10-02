@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#14121A" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<link rel="icon" href="assets/icons/icon-192.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="مدیریار سالن" />
+<title>هزینه‌ها | Beauty Salon Intelligence Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+<link rel="stylesheet" href="css/variables.css" />
+<link rel="stylesheet" href="css/layout.css" />
+<link rel="stylesheet" href="css/tables.css" />
+<link rel="stylesheet" href="css/components.css" />
+<link rel="stylesheet" href="css/charts.css" />
+</head>
+<body>
+
+<div class="app-shell">
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>هزینه‌ها</h1>
+        <div class="page-header__subtitle">مدیریت هزینه‌های سالن به تفکیک دسته</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" onclick="window.print()">چاپ گزارش</button>
+        <button class="btn btn-ghost" onclick="exportExpensesToExcel()">خروجی اکسل</button>
+        <button class="btn btn-primary" onclick="addExpense()">+ افزودن هزینه</button>
+      </div>
+    </div>
+
+    <div id="rangeBarSlot"></div>
+    <div id="kpiSlot" class="kpi-grid"></div>
+    <div id="filterBarSlot"></div>
+
+    <div class="chart-grid" style="grid-template-columns: 1fr;">
+      <div class="chart-card" style="max-width:480px;">
+        <div class="chart-card__title">سهم هر دسته از هزینه</div>
+        <div class="chart-card__canvas-wrap"><canvas id="expenseByCategoryChart"></canvas></div>
+      </div>
+    </div>
+
+    <div id="tableSlot"></div>
+  </main>
+
+  <div id="sidebarSlot"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="js/license.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/db.js"></script>
+<script src="js/components.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/datepicker.js"></script>
+<script src="js/expenses.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

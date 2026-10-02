@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#14121A" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<link rel="icon" href="assets/icons/icon-192.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="مدیریار سالن" />
+<title>پروفایل عضو تیم | Beauty Salon Intelligence Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+<link rel="stylesheet" href="css/variables.css" />
+<link rel="stylesheet" href="css/layout.css" />
+<link rel="stylesheet" href="css/tables.css" />
+<link rel="stylesheet" href="css/components.css" />
+<link rel="stylesheet" href="css/charts.css" />
+</head>
+<body>
+
+<div class="app-shell">
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>پروفایل عضو تیم</h1>
+        <div class="page-header__subtitle">درآمد، کمیسیون و عملکرد شخصی</div>
+      </div>
+      <a class="btn btn-ghost" href="employees.html">بازگشت به تیم سالن</a>
+    </div>
+
+    <div id="profileSlot"></div>
+    <div id="kpiSlot" class="kpi-grid"></div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-card__title">روند درآمد ۶ ماه اخیر</div>
+        <div class="chart-card__canvas-wrap"><canvas id="employeeMonthlyChart"></canvas></div>
+      </div>
+      <div class="chart-card" id="serviceBreakdownWrap">
+        <div class="chart-card__title">سهم خدمات از درآمد</div>
+        <div class="chart-card__canvas-wrap"><canvas id="employeeServiceChart"></canvas></div>
+      </div>
+    </div>
+
+    <h2 style="font-size:18px;margin:0 0 12px;">تراکنش‌های اخیر</h2>
+    <div id="transactionsTableSlot"></div>
+  </main>
+
+  <div id="sidebarSlot"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="js/license.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/db.js"></script>
+<script src="js/components.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/employees.js"></script>
+<script src="js/employee-detail.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

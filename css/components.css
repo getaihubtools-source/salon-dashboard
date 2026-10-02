@@ -1,0 +1,300 @@
+/* ==========================================================================
+   components.css — کارت KPI، مودال، توست، بج، فیلتر، دکمه
+   ========================================================================== */
+
+/* --- دکمه‌ها --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: var(--radius-btn);
+  font-size: var(--fs-base);
+  font-weight: 600;
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+}
+.btn-primary {
+  background: var(--accent-gold);
+  color: #1C1610;
+}
+.btn-primary:hover { filter: brightness(1.08); }
+.btn-ghost {
+  background: transparent;
+  border-color: var(--border-soft);
+  color: var(--text-primary);
+}
+.btn-ghost:hover { border-color: var(--border-hover); }
+.btn-danger {
+  background: transparent;
+  border-color: var(--accent-rose);
+  color: var(--accent-rose);
+}
+.btn-danger:hover { background: var(--accent-rose-dim); }
+
+/* --- کارت KPI --- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  padding: var(--space-3) var(--space-4);
+}
+.kpi-card__title {
+  color: var(--text-secondary);
+  font-size: var(--fs-small);
+  margin-bottom: 10px;
+}
+.kpi-card__value {
+  font-size: var(--fs-kpi);
+  font-weight: 700;
+}
+.kpi-card--gold .kpi-card__value   { color: var(--tier-gold); }
+.kpi-card--silver .kpi-card__value { color: var(--tier-silver); }
+.kpi-card--bronze .kpi-card__value { color: var(--tier-bronze); }
+.kpi-card--positive .kpi-card__value { color: var(--accent-emerald); }
+.kpi-card--negative .kpi-card__value { color: var(--accent-rose); }
+
+@media (max-width: 900px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* --- بج رده وفاداری --- */
+.tier-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: var(--radius-chip);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+.tier-badge::before {
+  content: '';
+  width: 7px; height: 7px;
+  border-radius: 50%;
+}
+.tier-badge--new    { background: #A79FB022; color: var(--text-secondary); }
+.tier-badge--new::before   { background: var(--text-secondary); }
+.tier-badge--gold   { background: #D4AF3722; color: var(--tier-gold); }
+.tier-badge--gold::before   { background: var(--tier-gold); }
+.tier-badge--silver { background: #B9BAC222; color: var(--tier-silver); }
+.tier-badge--silver::before { background: var(--tier-silver); }
+.tier-badge--bronze { background: #B08D5722; color: var(--tier-bronze); }
+.tier-badge--bronze::before { background: var(--tier-bronze); }
+
+/* --- بج وضعیت فعال/غیرفعال پرسنل --- */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: var(--radius-chip);
+  font-size: var(--fs-small);
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.status-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; }
+.status-badge--active { background: var(--accent-emerald-dim); color: var(--accent-emerald); }
+.status-badge--active::before { background: var(--accent-emerald); }
+.status-badge--gold { background: #D4AF3722; color: var(--tier-gold); }
+.status-badge--gold::before { background: var(--tier-gold); }
+.status-badge--silver { background: #3D7BFF22; color: #7FA6FF; }
+.status-badge--silver::before { background: #7FA6FF; }
+.status-badge--inactive { background: var(--accent-rose-dim); color: var(--accent-rose); }
+.status-badge--inactive::before { background: var(--accent-rose); }
+
+/* --- کارت پروفایل پرسنل (employee-detail) --- */
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+.profile-header__name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.profile-header__skill { color: var(--text-secondary); font-size: var(--fs-base); }
+
+/* --- فیلتر بار --- */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+.filter-bar__search {
+  flex: 1;
+  min-width: 220px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-btn);
+  padding: 10px 14px;
+  color: var(--text-primary);
+}
+.filter-bar__search:focus { outline: none; border-color: var(--accent-gold); }
+.filter-bar__search::placeholder { color: var(--text-muted); }
+
+.filter-bar__select {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-btn);
+  padding: 10px 14px;
+  color: var(--text-primary);
+  flex: 0 0 200px;
+}
+.filter-bar__select:focus { outline: none; border-color: var(--accent-gold); }
+
+.chip {
+  padding: 8px 16px;
+  border-radius: var(--radius-chip);
+  border: 1px solid var(--border-soft);
+  color: var(--text-secondary);
+  font-size: var(--fs-small);
+  background: transparent;
+  transition: all var(--transition-fast);
+}
+.chip:hover { border-color: var(--border-hover); color: var(--text-primary); }
+.chip.is-active {
+  background: var(--accent-gold-dim);
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+/* --- مودال --- */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(10, 8, 14, 0.6);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal-overlay.is-open { display: flex; }
+
+.modal-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  width: 420px;
+  max-width: 92vw;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: var(--space-4);
+  box-shadow: var(--shadow-card);
+}
+.modal-box h2 {
+  font-size: var(--fs-section);
+  margin: 0 0 var(--space-3);
+}
+.form-field { margin-bottom: var(--space-3); }
+.form-field label {
+  display: block;
+  font-size: var(--fs-small);
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+.form-field input, .form-field select, .form-field textarea {
+  width: 100%;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-soft);
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: var(--text-primary);
+}
+.form-field input:focus, .form-field select:focus, .form-field textarea:focus {
+  outline: none; border-color: var(--accent-gold);
+}
+.modal-actions {
+  display: flex;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  justify-content: flex-start;
+}
+
+/* --- توست --- */
+.toast-stack {
+  position: fixed;
+  bottom: var(--space-4);
+  left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  z-index: 200;
+}
+.toast {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-right: 3px solid var(--accent-gold);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: var(--fs-base);
+  box-shadow: var(--shadow-card);
+  animation: toast-in 180ms ease;
+}
+.toast.toast--success { border-right-color: var(--accent-emerald); }
+.toast.toast--error   { border-right-color: var(--accent-rose); }
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+
+/* --- ویجت نوبت‌های امروز (داشبورد) --- */
+.today-appt {
+  display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap;
+  padding: 12px 0; border-bottom: 1px dashed var(--border-soft);
+}
+.today-appt:last-child { border-bottom: none; }
+.today-appt__time { min-width: 64px; font-weight: 700; color: var(--accent-gold); display: flex; flex-direction: column; }
+.today-appt__time small { font-weight: 400; color: var(--text-muted); font-size: 11px; }
+.today-appt__info { flex: 1; min-width: 140px; }
+.today-appt__name { font-weight: 600; }
+.today-appt__meta { color: var(--text-secondary); font-size: var(--fs-small); margin-top: 2px; }
+.today-appt__actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.today-appt__actions .chip { padding: 6px 12px; }
+
+/* --------------------------------------------------------------------
+   گیت فعال‌سازی لایسنس — تمام‌صفحه، روی همه‌چیز می‌نشیند
+   -------------------------------------------------------------------- */
+#licenseGateOverlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg-primary);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+}
+.license-gate__card {
+  width: 100%; max-width: 380px;
+  background: var(--bg-card); border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card); padding: 32px 26px;
+  box-shadow: var(--shadow-card); text-align: center;
+}
+.license-gate__brand { color: var(--accent-gold); font-weight: 700; font-size: 15px; margin-bottom: 18px; }
+.license-gate__title { margin: 0 0 8px; font-size: 20px; }
+.license-gate__desc { color: var(--text-secondary); font-size: var(--fs-small); margin: 0 0 22px; line-height: 1.8; }
+.license-gate__card .form-field { text-align: right; margin-bottom: 16px; }
+.license-gate__card input {
+  width: 100%; background: var(--bg-primary); border: 1px solid var(--border-soft);
+  border-radius: 8px; padding: 11px 12px; color: var(--text-primary); font-size: 14px;
+  text-align: center; letter-spacing: 0.5px;
+}
+.license-gate__card input:focus { outline: none; border-color: var(--accent-gold); }
+.license-gate__vpn-note {
+  margin-top: 14px; padding: 10px 12px; border-radius: 8px;
+  background: var(--accent-gold-dim); color: var(--accent-gold);
+  font-size: 12px; line-height: 1.8;
+}
+.license-gate__message { margin-top: 14px; padding: 10px 12px; border-radius: 8px; font-size: var(--fs-small); }
+.license-gate__message--error { background: var(--accent-rose-dim); color: var(--accent-rose); }
+.license-gate__message--success { background: var(--accent-emerald-dim); color: var(--accent-emerald); }

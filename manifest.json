@@ -1,0 +1,20 @@
+{
+  "id": "./dashboard.html",
+  "name": "مدیریار سالن — داشبورد هوشمند سالن زیبایی",
+  "short_name": "مدیریار سالن",
+  "description": "داشبورد مدیریت مالی، نوبت‌دهی و مشتریان سالن زیبایی",
+  "lang": "fa",
+  "dir": "rtl",
+  "start_url": "./dashboard.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#14121A",
+  "background_color": "#14121A",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

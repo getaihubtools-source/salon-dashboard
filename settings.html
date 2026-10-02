@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#14121A" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<link rel="icon" href="assets/icons/icon-192.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="مدیریار سالن" />
+<title>تنظیمات | Beauty Salon Intelligence Dashboard</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+<link rel="stylesheet" href="css/variables.css" />
+<link rel="stylesheet" href="css/layout.css" />
+<link rel="stylesheet" href="css/tables.css" />
+<link rel="stylesheet" href="css/components.css" />
+<link rel="stylesheet" href="css/charts.css" />
+</head>
+<body>
+
+<div class="app-shell">
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>تنظیمات</h1>
+        <div class="page-header__subtitle">اطلاعات سالن، آستانه‌های باشگاه وفاداری و بکاپ</div>
+      </div>
+    </div>
+
+    <div class="chart-card" style="max-width:480px;margin-bottom:20px;">
+      <div class="chart-card__title">اطلاعات سالن</div>
+      <div id="salonFormSlot"></div>
+    </div>
+
+    <div class="chart-card" style="max-width:480px;margin-bottom:20px;">
+      <div class="chart-card__title">آستانه‌های باشگاه مشتریان</div>
+      <p style="color:var(--text-secondary);font-size:var(--fs-small);margin-top:-8px;margin-bottom:14px;">
+        مشتری با مجموع خرید بیشتر از آستانه طلایی و مراجعه اخیر → سطح طلایی. کمتر از بازه فعال بودن → همیشه برنزی.
+      </p>
+      <div id="loyaltyFormSlot"></div>
+    </div>
+
+    <div class="chart-card" style="max-width:480px;margin-bottom:20px;">
+      <div class="chart-card__title">ساعت کاری سالن</div>
+      <p style="color:var(--text-secondary);font-size:var(--fs-small);margin-top:-8px;margin-bottom:14px;">
+        برای ساخت خودکار گزینه‌های ساعت در فرم نوبت‌دهی استفاده می‌شود.
+      </p>
+      <div id="businessHoursFormSlot"></div>
+    </div>
+
+    <div class="chart-card" style="max-width:480px;">
+      <div class="chart-card__title">بکاپ و بازیابی</div>
+      <div id="backupSlot"></div>
+    </div>
+  </main>
+
+  <div id="sidebarSlot"></div>
+</div>
+
+<script src="js/license.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/db.js"></script>
+<script src="js/components.js"></script>
+<script src="js/settings.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

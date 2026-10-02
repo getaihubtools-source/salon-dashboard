@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#14121A" />
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png" />
+<link rel="icon" href="assets/icons/icon-192.png" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="مدیریار سالن" />
+<title>مشتریان | Beauty Salon Intelligence Dashboard</title>
+
+<!-- فونت وزیرمتن — در صورت فیلترشدن CDN، فایل فونت را در assets/fonts قرار دهید و لینک زیر را با @font-face محلی جایگزین کنید -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
+
+<link rel="stylesheet" href="css/variables.css" />
+<link rel="stylesheet" href="css/layout.css" />
+<link rel="stylesheet" href="css/tables.css" />
+<link rel="stylesheet" href="css/components.css" />
+</head>
+<body>
+
+<div class="app-shell">
+  <main class="main">
+    <div class="page-header">
+      <div>
+        <h1>مشتریان</h1>
+        <div class="page-header__subtitle">مدیریت مشتریان و سطح‌بندی باشگاه وفاداری</div>
+      </div>
+      <button class="btn btn-primary" onclick="addCustomer()">+ افزودن مشتری</button>
+    </div>
+
+    <div id="kpiSlot" class="kpi-grid"></div>
+    <div id="filterBarSlot"></div>
+    <div id="tableSlot"></div>
+  </main>
+
+  <div id="sidebarSlot"></div>
+</div>
+
+<script src="js/license.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/db.js"></script>
+<script src="js/components.js"></script>
+<script src="js/datepicker.js"></script>
+<script src="js/customers.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

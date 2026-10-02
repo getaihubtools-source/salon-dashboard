@@ -1,0 +1,131 @@
+/* ==========================================================================
+   tables.css — جدول داده استاندارد کل پروژه
+   ========================================================================== */
+
+.table-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+}
+
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-base);
+}
+
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  font-size: var(--fs-small);
+  text-align: right;
+  padding: 13px var(--space-3);
+  border-bottom: 1px solid var(--border-soft);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.data-table thead th:hover { color: var(--text-primary); }
+
+.data-table thead th .sort-arrow {
+  margin-right: 4px;
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--border-soft);
+  transition: background var(--transition-fast);
+}
+
+.data-table tbody tr:last-child { border-bottom: none; }
+.data-table tbody tr:nth-child(even) { background: var(--bg-secondary); }
+.data-table tbody tr:hover { background: var(--border-soft); }
+
+.data-table tbody td {
+  padding: 12px var(--space-3);
+  text-align: right;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.data-table td.col-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+  background: transparent;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.icon-btn:hover { color: var(--text-primary); border-color: var(--border-hover); }
+.icon-btn.danger:hover { color: var(--accent-rose); border-color: var(--accent-rose); }
+
+.table-empty {
+  padding: 56px var(--space-4);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.table-empty__title {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin-bottom: var(--space-1);
+}
+
+/* --- سلول قابل‌ویرایش درجا --- */
+.editable-cell {
+  cursor: text;
+  border-bottom: 1px dashed var(--text-muted);
+  padding-bottom: 1px;
+}
+.editable-cell:hover { border-color: var(--accent-gold); }
+.editable-cell input {
+  background: var(--bg-primary);
+  border: 1px solid var(--accent-gold);
+  border-radius: 6px;
+  color: var(--text-primary);
+  padding: 4px 8px;
+  font-size: var(--fs-base);
+  width: 100%;
+}
+
+/* --- ریسپانسیو: جدول به کارت --- */
+@media (max-width: 720px) {
+  .data-table thead { display: none; }
+  .data-table, .data-table tbody, .data-table tr, .data-table td { display: block; width: 100%; }
+  .data-table tbody tr {
+    background: var(--bg-card) !important;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-card);
+    margin-bottom: var(--space-2);
+    padding: var(--space-2);
+  }
+  .data-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 4px;
+    border-bottom: 1px dashed var(--border-soft);
+  }
+  .data-table tbody td:last-child { border-bottom: none; }
+  .data-table tbody td::before {
+    content: attr(data-label);
+    color: var(--text-secondary);
+    font-size: var(--fs-small);
+  }
+}

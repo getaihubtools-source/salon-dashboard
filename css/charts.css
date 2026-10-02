@@ -1,0 +1,31 @@
+/* ==========================================================================
+   charts.css — کانتینر نمودارها
+   ========================================================================== */
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.chart-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  padding: var(--space-4);
+}
+
+.chart-card__title {
+  font-size: var(--fs-section);
+  margin-bottom: var(--space-3);
+}
+
+.chart-card__canvas-wrap {
+  position: relative;
+  height: 260px;
+}
+
+@media (max-width: 900px) {
+  .chart-grid { grid-template-columns: 1fr; }
+}

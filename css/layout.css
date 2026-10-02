@@ -1,0 +1,212 @@
+/* ==========================================================================
+   layout.css — سایدبار ثابت (سمت راست) + اسکلت صفحات + منوی موبایل
+   ========================================================================== */
+
+.app-shell { min-height: 100vh; }
+
+/* سایدبار همیشه fixed — مستقل از طول محتوای صفحه، هرگز نیازی به اسکرول برای دیدنش نیست */
+.sidebar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 232px;
+  height: 100vh;
+  z-index: 60;
+  background: var(--bg-secondary);
+  border-inline-start: 1px solid var(--border-soft);
+  padding: var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  overflow-y: auto;
+}
+
+.sidebar__brand {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent-gold);
+  padding: 0 var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: var(--space-3);
+}
+
+.sidebar__nav { display: flex; flex-direction: column; gap: var(--space-1); flex: 1; }
+
+.sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 11px var(--space-2);
+  border-radius: var(--radius-btn);
+  color: var(--text-secondary);
+  font-size: var(--fs-base);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.sidebar__link-icon { display: inline-flex; flex-shrink: 0; opacity: 0.85; }
+.sidebar__link:hover { background: var(--bg-card); color: var(--text-primary); }
+.sidebar__link.is-active { background: var(--accent-gold-dim); color: var(--accent-gold); font-weight: 600; }
+.sidebar__link.is-active .sidebar__link-icon { opacity: 1; }
+
+.sidebar__contact {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-soft);
+}
+.sidebar__contact-title { font-size: var(--fs-small); color: var(--text-secondary); margin-bottom: var(--space-2); padding: 0 var(--space-2); }
+.sidebar__contact-link {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px var(--space-2); border-radius: var(--radius-btn);
+  font-size: var(--fs-small); color: var(--text-secondary);
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+.sidebar__contact-link:hover { background: var(--bg-card); color: var(--accent-gold); }
+.sidebar__contact-handle { color: var(--text-muted); direction: ltr; }
+
+/* محتوای اصلی همیشه یک فاصله‌ی ثابت از سایدبار fixed می‌گیرد (فقط دسکتاپ) */
+.main {
+  margin-right: 232px;
+  padding: var(--space-5);
+  max-width: 1180px;
+  width: calc(100% - 232px);
+}
+
+.page-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: var(--space-4); gap: var(--space-3); flex-wrap: wrap;
+}
+.page-header h1 { font-size: var(--fs-title); margin: 0; }
+.page-header__subtitle { color: var(--text-secondary); font-size: var(--fs-base); margin-top: var(--space-1); }
+
+/* --------------------------------------------------------------------
+   Bottom Navigation موبایل — جایگزین کامل سایدبار زیر ۹۰۰px
+   حالت فعال فقط با تغییر رنگ + یک نقطه‌ی طلایی بالای آیکون مشخص می‌شود
+   (بدون پس‌زمینه‌ی پر‌رنگ/pill، طبق همون الگوی مینیمال محصولات دیگر)
+   -------------------------------------------------------------------- */
+.bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; right: 0; left: 0;
+  z-index: 100;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-soft);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  gap: 2px;
+}
+.bottom-nav__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 6px 2px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: inherit;
+  position: relative;
+}
+.bottom-nav__icon { position: relative; display: inline-flex; }
+.bottom-nav__icon::before {
+  content: '';
+  position: absolute;
+  top: -7px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--accent-gold);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.bottom-nav__label { font-size: 10.5px; line-height: 1; }
+.bottom-nav__item.is-active { color: var(--accent-gold); }
+.bottom-nav__item.is-active .bottom-nav__icon::before { opacity: 1; }
+
+/* --------------------------------------------------------------------
+   ورقه «بیشتر» — grid آیکون‌های باقی‌مانده، از پایین بالا می‌آید
+   -------------------------------------------------------------------- */
+.more-sheet-backdrop {
+  display: none; position: fixed; inset: 0; z-index: 105;
+  background: rgba(10, 8, 14, 0.55);
+}
+.more-sheet-backdrop.is-open { display: block; }
+
+.more-sheet {
+  display: none;
+  position: fixed;
+  right: 0; left: 0; bottom: 0;
+  z-index: 110;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border-soft);
+  border-radius: 18px 18px 0 0;
+  padding: 10px 16px calc(20px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.4);
+}
+.more-sheet.is-open { display: block; }
+.more-sheet__handle { width: 36px; height: 4px; border-radius: 999px; background: var(--border-hover); margin: 6px auto 14px; }
+.more-sheet__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.more-sheet__item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  padding: 14px 6px; border-radius: 12px; background: var(--bg-card);
+  color: var(--text-secondary); font-size: 12px; text-align: center;
+}
+.more-sheet__icon { color: var(--text-secondary); }
+.more-sheet__item.is-active { color: var(--accent-gold); background: var(--accent-gold-dim); }
+.more-sheet__item.is-active .more-sheet__icon { color: var(--accent-gold); }
+
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  .main { margin-right: 0; width: 100%; padding: var(--space-3) var(--space-3) calc(78px + env(safe-area-inset-bottom, 0px)); }
+  .bottom-nav { display: flex; }
+}
+
+@media (max-width: 480px) {
+  .page-header { flex-direction: column; align-items: flex-start; }
+}
+
+/* --------------------------------------------------------------------
+   جدول‌بندی صفحه (Pagination)
+   -------------------------------------------------------------------- */
+.table-pager {
+  display: flex; align-items: center; justify-content: center; gap: var(--space-3);
+  padding: var(--space-3) 0; color: var(--text-secondary); font-size: var(--fs-small);
+}
+.table-pager button:disabled { opacity: 0.35; cursor: default; }
+
+/* --------------------------------------------------------------------
+   تقویم شمسی — پاپ‌آپ
+   -------------------------------------------------------------------- */
+.jdp-popup {
+  position: absolute; display: none; z-index: 300;
+  background: var(--bg-card); border: 1px solid var(--border-soft);
+  border-radius: 12px; padding: 12px; width: 260px; box-shadow: var(--shadow-card);
+}
+.jdp-popup.is-open { display: block; }
+.jdp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; font-size: var(--fs-base); }
+.jdp-nav { background: transparent; border: 1px solid var(--border-soft); border-radius: 6px; width: 26px; height: 26px; color: var(--text-primary); }
+.jdp-dow { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; color: var(--text-secondary); font-size: var(--fs-small); margin-bottom: 4px; }
+.jdp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.jdp-day { aspect-ratio: 1; border: none; background: transparent; color: var(--text-primary); border-radius: 8px; font-size: var(--fs-small); }
+.jdp-day:hover { background: var(--bg-secondary); }
+.jdp-day--today { border: 1px solid var(--accent-gold); }
+.jdp-day--selected { background: var(--accent-gold); color: #1C1610; font-weight: 700; }
+.jdp-day--blank { pointer-events: none; }
+.jdp-today-btn { width: 100%; margin-top: 8px; padding: 8px; border-radius: 8px; border: 1px solid var(--border-soft); background: transparent; color: var(--accent-gold); }
+.jdp-input { cursor: pointer; background: var(--bg-primary); }
+
+/* --------------------------------------------------------------------
+   چاپ — سایدبار/دکمه‌ها/فیلتر مخفی؛ جدول همیشه افقی و فشرده (نه کارتی)
+   -------------------------------------------------------------------- */
+@media print {
+  .sidebar, .bottom-nav, .more-sheet, .more-sheet-backdrop,
+  .btn, .filter-bar, .table-pager, .page-header .btn { display: none !important; }
+  .main { margin-right: 0; padding: 0; max-width: 100%; width: 100%; }
+
+  /* بازگرداندن اجباری جدول به حالت افقی، بی‌توجه به breakpoint موبایل */
+  .data-table thead { display: table-header-group !important; }
+  .data-table, .data-table tbody, .data-table tr { display: table !important; width: 100% !important; }
+  .data-table tr { display: table-row !important; }
+  .data-table td, .data-table th { display: table-cell !important; padding: 6px 8px !important; }
+  .data-table tbody tr { background: transparent !important; border-bottom: 1px solid #ccc !important; margin: 0 !important; padding: 0 !important; }
+  .data-table tbody td::before { content: none !important; }
+  .data-table tbody td { border-bottom: none !important; }
+}

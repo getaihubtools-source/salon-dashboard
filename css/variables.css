@@ -1,0 +1,70 @@
+/* ==========================================================================
+   variables.css — Beauty Salon Intelligence Dashboard
+   Design Direction: Dark Luxe / Beauty Industry
+   ========================================================================== */
+
+:root {
+  /* پس‌زمینه‌ها — مشکی مایل به بنفش تیره، نه مشکی مطلق */
+  --bg-primary:    #14121A;
+  --bg-secondary:  #1C1926;
+  --bg-card:       #221E2E;
+  --border-soft:   #322C40;
+  --border-hover:  #46394F;
+
+  /* رنگ‌های برند */
+  --accent-gold:    #D4AF7A;
+  --accent-gold-dim: #D4AF7A26;
+  --accent-blush:   #E8A0A0;
+  --accent-plum:    #9C4F96;
+  --accent-emerald: #3FAE8C;
+  --accent-emerald-dim: #3FAE8C22;
+  --accent-rose:    #D96C8C;
+  --accent-rose-dim: #D96C8C22;
+
+  /* رده‌های وفاداری */
+  --tier-gold:   #D4AF37;
+  --tier-silver: #B9BAC2;
+  --tier-bronze: #B08D57;
+
+  /* متن */
+  --text-primary:   #F4F1EC;
+  --text-secondary: #A79FB0;
+  --text-muted:     #6F6779;
+
+  /* تایپوگرافی */
+  --font-main: 'Vazirmatn', Tahoma, sans-serif;
+  --fs-title:    28px;
+  --fs-section:  18px;
+  --fs-kpi:      26px;
+  --fs-base:     14px;
+  --fs-small:    12.5px;
+
+  /* فاصله‌ها */
+  --radius-card: 14px;
+  --radius-btn:  10px;
+  --radius-chip: 999px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 14px;
+  --space-4: 20px;
+  --space-5: 32px;
+
+  --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.28);
+  --transition-fast: 140ms ease;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  font-size: var(--fs-base);
+  direction: rtl;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
