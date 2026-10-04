@@ -255,18 +255,16 @@ function _appointmentFormHtml(appt) {
   const customers = getAll('customers');
   const employees = getAll('employees').filter(e => e.active);
   const services = getAll('services').filter(s => s.active);
-  const custOptions = customers.map(c => `<option value="${c.id}" ${a.customerId === c.id ? 'selected' : ''}>${c.name}</option>`).join('');
   const empOptions = employees.map(e => `<option value="${e.id}" ${a.employeeId === e.id ? 'selected' : ''}>${e.name}</option>`).join('');
   const svcOptions = services.map(s => `<option value="${s.id}" ${a.serviceId === s.id ? 'selected' : ''}>${s.name} (${s.duration} دقیقه)</option>`).join('');
 
   return `
     <h2>${isEdit ? 'ویرایش نوبت' : 'افزودن نوبت جدید'}</h2>
-    <div class="form-field">
+    <div class="form-field searchable-select">
       <label>مشتری</label>
-      <select id="f_customer" onchange="_toggleQuickCustomerFields()">
-        <option value="__new__">+ مشتری جدید (گذری / بدون ثبت قبلی)</option>
-        ${custOptions}
-      </select>
+      <input id="f_customerSearch" type="text" autocomplete="off" placeholder="نام یا شماره موبایل را تایپ کنید..." />
+      <input type="hidden" id="f_customer" value="${a.customerId || ''}" />
+      <div id="f_customerDropdown" class="searchable-select__dropdown"></div>
     </div>
     <div id="quickCustomerFields" style="display:${isEdit ? 'none' : 'block'};">
       <div class="form-field"><label>نام مشتری گذری</label><input id="f_quickName" type="text" placeholder="نام و نام خانوادگی" /></div>
@@ -302,9 +300,65 @@ function _toggleQuickCustomerFields() {
   document.getElementById('quickCustomerFields').style.display = isNew ? 'block' : 'none';
 }
 
+/* --------------------------------------------------------------------
+   سلکت جستجوشونده مشتری — جایگزین select ساده (آیتم ۵)
+   فیلد مخفی f_customer همچنان همان مقداری (شناسه مشتری یا "__new__") را نگه
+   می‌دارد که بقیه appointments.js (بررسی تداخل، ذخیره‌سازی) از قبل انتظارش را دارد
+   -------------------------------------------------------------------- */
+function _customerSearchLabel(c) {
+  return c.phone ? `${c.name} — ${c.phone}` : c.name;
+}
+
+function _initCustomerSearchSelect(currentCustomerId) {
+  const customers = getAll('customers');
+  const input = document.getElementById('f_customerSearch');
+  const hidden = document.getElementById('f_customer');
+  const dropdown = document.getElementById('f_customerDropdown');
+  if (!input || !hidden || !dropdown) return;
+
+  const current = currentCustomerId ? customers.find(c => c.id === currentCustomerId) : null;
+  input.value = current ? _customerSearchLabel(current) : '';
+  hidden.value = currentCustomerId || '';
+
+  function renderList(query) {
+    const q = (query || '').trim();
+    const matches = q ? customers.filter(c => c.name.includes(q) || (c.phone || '').includes(q)) : customers;
+    const newItemHtml = `<div class="searchable-select__item searchable-select__item--new" data-id="__new__">+ مشتری جدید (گذری / بدون ثبت قبلی)</div>`;
+    const itemsHtml = matches.slice(0, 30).map(c => `
+      <div class="searchable-select__item" data-id="${c.id}">
+        <span>${c.name}</span><span class="searchable-select__phone">${c.phone || ''}</span>
+      </div>`).join('');
+    dropdown.innerHTML = newItemHtml + (itemsHtml || `<div class="searchable-select__item searchable-select__item--empty">موردی یافت نشد</div>`);
+    dropdown.classList.add('is-open');
+    dropdown.querySelectorAll('.searchable-select__item[data-id]').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = el.dataset.id;
+        if (id === '__new__') {
+          hidden.value = '__new__';
+          input.value = '';
+          input.placeholder = 'مشتری گذری جدید — نام را پایین وارد کنید';
+        } else {
+          const c = customers.find(x => x.id === Number(id));
+          hidden.value = id;
+          input.value = c ? _customerSearchLabel(c) : '';
+        }
+        dropdown.classList.remove('is-open');
+        _toggleQuickCustomerFields();
+      });
+    });
+  }
+
+  input.addEventListener('focus', () => renderList(input.value.includes('—') ? '' : input.value));
+  input.addEventListener('input', () => { hidden.value = ''; renderList(input.value); });
+  document.addEventListener('click', function _outsideCloser(e) {
+    if (!dropdown.contains(e.target) && e.target !== input) dropdown.classList.remove('is-open');
+  });
+}
+
 function _afterOpenAppointmentModal() {
   attachAmountInput(document.getElementById('f_deposit'));
   attachJalaliDatePicker(document.getElementById('f_date'));
+  _initCustomerSearchSelect(document.getElementById('f_customer').value ? Number(document.getElementById('f_customer').value) : null);
   _updateEndTimePreview();
 }
 

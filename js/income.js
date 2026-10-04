@@ -113,7 +113,7 @@ function renderIncomeTable() {
       { key: 'date', label: 'تاریخ' },
       { key: 'customerId', label: 'مشتری', render: t => { const c = customers.find(x => x.id === t.customerId); return c ? c.name : '—'; } },
       { key: 'serviceId', label: 'خدمت', render: t => { const s = services.find(x => x.id === t.serviceId); return s ? s.name : '—'; } },
-      { key: 'employeeId', label: 'پرسنل', render: t => { const e = employees.find(x => x.id === t.employeeId); return e ? e.name : '—'; } },
+      { key: 'employeeId', label: 'همکار', render: t => { const e = employees.find(x => x.id === t.employeeId); return e ? e.name : '—'; } },
       { key: 'category', label: 'دسته', render: t => TX_CATEGORY_LABELS[t.category] || t.category },
       { key: 'paymentMethod', label: 'روش پرداخت', render: t => PAYMENT_METHOD_LABELS[t.paymentMethod] || t.paymentMethod },
       { key: 'amount', label: 'مبلغ', render: t => formatCurrency(t.amount) }
@@ -137,7 +137,7 @@ function exportIncomeToExcel() {
     { label: 'تاریخ', value: t => t.date },
     { label: 'مشتری', value: t => { const c = customers.find(x => x.id === t.customerId); return c ? c.name : ''; } },
     { label: 'خدمت', value: t => { const s = services.find(x => x.id === t.serviceId); return s ? s.name : ''; } },
-    { label: 'پرسنل', value: t => { const e = employees.find(x => x.id === t.employeeId); return e ? e.name : ''; } },
+    { label: 'همکار', value: t => { const e = employees.find(x => x.id === t.employeeId); return e ? e.name : ''; } },
     { label: 'دسته', value: t => TX_CATEGORY_LABELS[t.category] || t.category },
     { label: 'روش پرداخت', value: t => PAYMENT_METHOD_LABELS[t.paymentMethod] || t.paymentMethod },
     { label: 'مبلغ (ریال)', value: t => t.amount }
@@ -161,7 +161,7 @@ function _transactionFormHtml(tx) {
     <h2>${isEdit ? 'ویرایش تراکنش' : 'ثبت تراکنش درآمد'}</h2>
     <div class="form-field"><label>مشتری</label><select id="f_customer">${custOptions || '<option value="">ابتدا مشتری ثبت کنید</option>'}</select></div>
     <div class="form-field"><label>خدمت/محصول (اختیاری)</label><select id="f_service">${svcOptions}</select></div>
-    <div class="form-field"><label>پرسنل (اختیاری)</label><select id="f_employee">${empOptions}</select></div>
+    <div class="form-field"><label>همکار (اختیاری)</label><select id="f_employee">${empOptions}</select></div>
     <div class="form-field"><label>دسته</label>
       <select id="f_category">
         ${Object.entries(TX_CATEGORY_LABELS).map(([v, l]) => `<option value="${v}" ${t.category === v ? 'selected' : ''}>${l}</option>`).join('')}

@@ -56,12 +56,6 @@ function renderSidebar(activePage) {
     </a>
   `).join('');
 
-  const contactLinks = CONTACT_LINKS.map(c => `
-    <a class="sidebar__contact-link" href="${c.url}" target="_blank" rel="noopener">
-      <span>${c.label}</span><span class="sidebar__contact-handle">${c.handle}</span>
-    </a>
-  `).join('');
-
   const primaryItems = MOBILE_PRIMARY_KEYS.map(k => NAV_ITEMS.find(i => i.key === k));
   const moreItems = NAV_ITEMS.filter(i => !MOBILE_PRIMARY_KEYS.includes(i.key));
   const isMoreActive = moreItems.some(i => i.key === activePage);
@@ -88,11 +82,6 @@ function renderSidebar(activePage) {
     <aside class="sidebar" id="mainSidebar">
       <div class="sidebar__brand">${salonName}</div>
       <nav class="sidebar__nav">${links}</nav>
-
-      <div class="sidebar__contact">
-        <div class="sidebar__contact-title">ارتباط با ما و پشتیبانی</div>
-        ${contactLinks}
-      </div>
     </aside>
 
     <nav class="bottom-nav">${bottomNavItems}</nav>
@@ -115,10 +104,12 @@ function toggleMoreSheet() {
    -------------------------------------------------------------------- */
 function renderKpiCard({ title, value, variant }) {
   const cls = variant ? `kpi-card--${variant}` : '';
+  // واحد «ریال» در انتهای مقدار (در صورت وجود) کوچک و کم‌رنگ‌تر از عدد اصلی نمایش داده شود (آیتم ۳)
+  const displayValue = String(value).replace(/\s?ریال$/, ' <span class="kpi-card__unit">ریال</span>');
   return `
     <div class="kpi-card ${cls}">
       <div class="kpi-card__title">${title}</div>
-      <div class="kpi-card__value">${value}</div>
+      <div class="kpi-card__value">${displayValue}</div>
     </div>
   `;
 }
@@ -269,7 +260,7 @@ function renderRangeChips(containerId, state, onChange) {
   const options = [
     { value: 'today', label: 'امروز' }, { value: 'week', label: 'هفته' },
     { value: 'month', label: 'این ماه' }, { value: 'all', label: 'کل دوره' },
-    { value: 'custom', label: 'بازه دلخواه' }
+    { value: 'custom', label: 'تاریخ دلخواه' }
   ];
   container.innerHTML = `
     <div class="filter-bar" style="margin-bottom:6px;">

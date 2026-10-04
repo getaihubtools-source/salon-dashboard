@@ -9,6 +9,28 @@ function renderSettingsPage() {
   renderLoyaltyForm();
   renderBusinessHoursForm();
   renderBackupSection();
+  renderAboutContactSection();
+}
+
+/* --------------------------------------------------------------------
+   درباره برنامه + ارتباط با ما — قبلاً در سایدبار دسکتاپ بود (در موبایل اصلاً
+   دیده نمی‌شد)، طبق آیتم ۱ اینجا منتقل شد تا هم از دسکتاپ هم موبایل در دسترس باشد
+   -------------------------------------------------------------------- */
+function renderAboutContactSection() {
+  const slot = document.getElementById('aboutContactSlot');
+  if (!slot) return;
+  const contactLinks = CONTACT_LINKS.map(c => `
+    <a class="sidebar__contact-link" style="padding:10px 4px;" href="${c.url}" target="_blank" rel="noopener">
+      <span>${c.label}</span><span class="sidebar__contact-handle">${c.handle}</span>
+    </a>
+  `).join('');
+  slot.innerHTML = `
+    <p style="color:var(--text-secondary);font-size:var(--fs-small);line-height:1.9;margin:0 0 14px;">
+      مدیریار سالن یک داشبورد آفلاین برای مدیریت مالی، نوبت‌دهی، مشتریان و تیم سالن‌های زیبایی است —
+      تمام اطلاعات فقط روی همین دستگاه ذخیره می‌شود و به هیچ سروری ارسال نمی‌شود.
+    </p>
+    <div style="border-top:1px solid var(--border-soft);padding-top:8px;">${contactLinks}</div>
+  `;
 }
 
 /* --------------------------------------------------------------------
@@ -105,16 +127,28 @@ function renderBackupSection() {
     : 'هنوز بکاپی گرفته نشده';
 
   document.getElementById('backupSlot').innerHTML = `
-    <p style="color:var(--text-secondary);margin-bottom:14px;">آخرین بکاپ: ${lastBackupText}</p>
-    <button class="btn btn-primary" onclick="triggerBackupExport()">دانلود بکاپ (JSON)</button>
+    <p style="color:var(--text-secondary);margin-bottom:14px;">آخرین نسخه پشتیبان: ${lastBackupText}</p>
+    <button class="btn btn-primary" onclick="triggerBackupExport()">تهیه نسخه پشتیبان</button>
     <div style="margin-top:20px;">
       <label style="display:block;font-size:var(--fs-small);color:var(--text-secondary);margin-bottom:8px;">
-        بازیابی از فایل بکاپ (کل اطلاعات فعلی جایگزین می‌شود)
+        بازیابی از فایل پشتیبان (کل اطلاعات فعلی جایگزین می‌شود)
       </label>
-      <input id="backupFileInput" type="file" accept="application/json" />
-      <button class="btn btn-danger" style="margin-right:8px;" onclick="handleBackupImport()">بازیابی</button>
+      <div class="file-input-row">
+        <label class="file-input-label" for="backupFileInput">
+          انتخاب فایل
+          <input id="backupFileInput" class="file-input-hidden" type="file" accept="application/json" onchange="_onBackupFileChosen()" />
+        </label>
+        <span id="backupFileName" class="file-input-name">فایلی انتخاب نشده</span>
+      </div>
+      <button class="btn btn-danger" style="margin-top:12px;" onclick="handleBackupImport()">بازیابی از فایل پشتیبان</button>
     </div>
   `;
+}
+
+function _onBackupFileChosen() {
+  const input = document.getElementById('backupFileInput');
+  const nameEl = document.getElementById('backupFileName');
+  if (nameEl) nameEl.textContent = (input.files && input.files[0]) ? input.files[0].name : 'فایلی انتخاب نشده';
 }
 
 function triggerBackupExport() {

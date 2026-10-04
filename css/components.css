@@ -51,8 +51,16 @@
   margin-bottom: 10px;
 }
 .kpi-card__value {
-  font-size: var(--fs-kpi);
+  font-size: 21px;
   font-weight: 700;
+  line-height: 1.3;
+}
+/* واحد «ریال» داخل کارت KPI — کوچک‌تر و کم‌رنگ‌تر از خود عدد (آیتم ۳) */
+.kpi-card__unit {
+  font-size: 11.5px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-right: 3px;
 }
 .kpi-card--gold .kpi-card__value   { color: var(--tier-gold); }
 .kpi-card--silver .kpi-card__value { color: var(--tier-silver); }
@@ -221,6 +229,58 @@
   margin-top: var(--space-4);
   justify-content: flex-start;
 }
+
+/* --------------------------------------------------------------------
+   سلکت جستجوشونده (مثلاً انتخاب مشتری در فرم نوبت) — آیتم ۵
+   -------------------------------------------------------------------- */
+.searchable-select { position: relative; }
+.searchable-select__dropdown {
+  position: absolute; top: 100%; right: 0; left: 0; z-index: 50;
+  margin-top: 4px; max-height: 230px; overflow-y: auto;
+  background: var(--bg-card); border: 1px solid var(--border-soft);
+  border-radius: 10px; box-shadow: var(--shadow-card);
+  display: none;
+}
+.searchable-select__dropdown.is-open { display: block; }
+.searchable-select__item {
+  display: flex; justify-content: space-between; align-items: center; gap: 8px;
+  padding: 10px 12px; font-size: var(--fs-base); cursor: pointer;
+  border-bottom: 1px solid var(--border-soft);
+}
+.searchable-select__item:last-child { border-bottom: none; }
+.searchable-select__item:hover { background: var(--bg-secondary); }
+.searchable-select__item--new { color: var(--accent-gold); font-weight: 600; }
+.searchable-select__item--empty { color: var(--text-muted); cursor: default; }
+.searchable-select__item--empty:hover { background: transparent; }
+.searchable-select__phone { color: var(--text-muted); font-size: var(--fs-small); direction: ltr; }
+
+/* --------------------------------------------------------------------
+   گرید ریسپانسیو تنظیمات — کارت‌ها دسکتاپ کنار هم، موبایل تک‌ستونه (آیتم ۱۱)
+   -------------------------------------------------------------------- */
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: var(--space-3);
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .settings-grid { grid-template-columns: 1fr; }
+}
+
+/* --------------------------------------------------------------------
+   دکمه سلیقه‌ای انتخاب فایل (بکاپ) — input بومی مخفی، لیبل استایل‌خورده جایگزین (آیتم ۱۳)
+   -------------------------------------------------------------------- */
+.file-input-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
+.file-input-hidden { position: absolute; width: 1px; height: 1px; opacity: 0; overflow: hidden; }
+.file-input-label {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 16px; border-radius: var(--radius-btn);
+  background: transparent; border: 1px solid var(--border-soft);
+  color: var(--text-primary); font-size: var(--fs-base); font-weight: 600;
+  cursor: pointer; transition: all var(--transition-fast);
+}
+.file-input-label:hover { border-color: var(--border-hover); }
+.file-input-name { color: var(--text-secondary); font-size: var(--fs-small); }
 
 /* --- توست --- */
 .toast-stack {

@@ -54,9 +54,9 @@ function renderEmployeeKpis() {
   });
 
   document.getElementById('kpiSlot').innerHTML = [
-    renderKpiCard({ title: 'تعداد کل پرسنل', value: all.length }),
-    renderKpiCard({ title: 'پرسنل فعال', value: active.length, variant: 'gold' }),
-    renderKpiCard({ title: 'برترین پرسنل (این ماه)', value: top.name }),
+    renderKpiCard({ title: 'تعداد کل همکاران', value: all.length }),
+    renderKpiCard({ title: 'همکاران فعال', value: active.length, variant: 'gold' }),
+    renderKpiCard({ title: 'برترین همکار (این ماه)', value: top.name }),
     renderKpiCard({ title: 'جمع کمیسیون پرداختی', value: formatCurrency(totalCommission) })
   ].join('');
 }
@@ -84,7 +84,7 @@ function renderEmployeeTable() {
       { key: 'phone', label: 'تلفن' },
       { key: 'commissionPercent', label: 'کمیسیون (٪)', render: e => `<span class="js-commission-cell" data-id="${e.id}">${e.commissionPercent}</span>` },
       { key: 'revenue', label: 'درآمد این ماه', render: e => formatCurrency(calcEmployeeRevenue(e.id, range)) },
-      { key: 'commission', label: 'سهم پرسنل', render: e => formatCurrency(calcCommissionAmount(e.id, range)) },
+      { key: 'commission', label: 'سهم همکار', render: e => formatCurrency(calcCommissionAmount(e.id, range)) },
       {
         key: 'active', label: 'وضعیت',
         render: e => `<button class="status-badge status-badge--${e.active ? 'active' : 'inactive'}" onclick="toggleEmployeeStatus(${e.id})">${e.active ? 'فعال' : 'غیرفعال'}</button>`
@@ -95,8 +95,8 @@ function renderEmployeeTable() {
       <button class="icon-btn" onclick="editEmployee(${e.id})" title="ویرایش">✎</button>
       <button class="icon-btn danger" onclick="deleteEmployee(${e.id})" title="حذف">✕</button>
     `,
-    emptyTitle: 'هنوز پرسنلی ثبت نشده',
-    emptyHint: 'با دکمه «افزودن پرسنل» بالای صفحه شروع کنید.'
+    emptyTitle: 'هنوز همکاری ثبت نشده',
+    emptyHint: 'با دکمه «افزودن همکار» بالای صفحه شروع کنید.'
   });
 
   document.querySelectorAll('.js-commission-cell').forEach(span => {
@@ -123,7 +123,7 @@ function _employeeFormHtml(emp) {
   const isEdit = !!emp;
   const e = emp || { name: '', skill: '', phone: '', commissionPercent: 30, active: true };
   return `
-    <h2>${isEdit ? 'ویرایش پرسنل' : 'افزودن پرسنل جدید'}</h2>
+    <h2>${isEdit ? 'ویرایش همکار' : 'افزودن همکار جدید'}</h2>
     <div class="form-field">
       <label>نام</label>
       <input id="f_name" type="text" value="${e.name}" />
@@ -161,14 +161,14 @@ function _saveEmployeeForm(id) {
   const phone = document.getElementById('f_phone').value.trim();
   const commissionPercent = Number(document.getElementById('f_commission').value) || 0;
 
-  if (!name) { showToast('نام پرسنل الزامی است', 'error'); return; }
+  if (!name) { showToast('نام همکار الزامی است', 'error'); return; }
 
   if (id) {
     update('employees', id, { name, skill, phone, commissionPercent });
-    showToast('اطلاعات پرسنل به‌روزرسانی شد', 'success');
+    showToast('اطلاعات همکار به‌روزرسانی شد', 'success');
   } else {
     insert('employees', { name, skill, phone, commissionType: 'percent', commissionPercent, active: true });
-    showToast('پرسنل جدید ثبت شد', 'success');
+    showToast('همکار جدید ثبت شد', 'success');
   }
   closeModal();
   renderEmployeeKpis();
@@ -178,9 +178,9 @@ function _saveEmployeeForm(id) {
 function deleteEmployee(id) {
   const e = getById('employees', id);
   if (!e) return;
-  confirmAction(`پرسنل «${e.name}» حذف شود؟`, () => {
+  confirmAction(`همکار «${e.name}» حذف شود؟`, () => {
     remove('employees', id);
-    showToast('پرسنل حذف شد', 'success');
+    showToast('همکار حذف شد', 'success');
     renderEmployeeKpis();
     renderEmployeeTable();
   });

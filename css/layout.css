@@ -198,7 +198,7 @@
    -------------------------------------------------------------------- */
 @media print {
   .sidebar, .bottom-nav, .more-sheet, .more-sheet-backdrop,
-  .btn, .filter-bar, .table-pager, .page-header .btn { display: none !important; }
+  .btn, .filter-bar, .table-pager, .page-header .btn, .page-header .icon-btn { display: none !important; }
   .main { margin-right: 0; padding: 0; max-width: 100%; width: 100%; }
 
   /* بازگرداندن اجباری جدول به حالت افقی، بی‌توجه به breakpoint موبایل */

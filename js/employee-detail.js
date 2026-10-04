@@ -17,8 +17,8 @@ function loadEmployeeProfile() {
   if (!emp) {
     document.getElementById('profileSlot').innerHTML = `
       <div class="table-empty">
-        <div class="table-empty__title">پرسنلی با این شناسه پیدا نشد</div>
-        <a class="btn btn-ghost" href="employees.html" style="margin-top:12px;">بازگشت به لیست پرسنل</a>
+        <div class="table-empty__title">همکاری با این شناسه پیدا نشد</div>
+        <a class="btn btn-ghost" href="employees.html" style="margin-top:12px;">بازگشت به لیست همکاران</a>
       </div>`;
     return;
   }
@@ -38,7 +38,7 @@ function loadEmployeeProfile() {
 
   document.getElementById('kpiSlot').innerHTML = [
     renderKpiCard({ title: 'درآمد این ماه', value: formatCurrency(monthRevenue) }),
-    renderKpiCard({ title: 'سهم پرسنل این ماه', value: formatCurrency(monthCommission), variant: 'gold' }),
+    renderKpiCard({ title: 'سهم همکار این ماه', value: formatCurrency(monthCommission), variant: 'gold' }),
     renderKpiCard({ title: 'نوبت‌های انجام‌شده این ماه', value: apptCount })
   ].join('');
 
@@ -115,7 +115,7 @@ function renderEmployeeTransactionsTable(id) {
       { key: 'paymentMethod', label: 'روش پرداخت' }
     ],
     rows,
-    emptyTitle: 'تراکنشی برای این پرسنل ثبت نشده'
+    emptyTitle: 'تراکنشی برای این همکار ثبت نشده'
   });
 }
 
