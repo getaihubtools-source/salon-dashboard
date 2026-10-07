@@ -34,6 +34,7 @@ function renderServicesPage() {
     onChipClick: (val) => { _serviceState.category = val; renderServiceTable(); }
   });
   renderServiceTable();
+  _watchResponsivePagination('renderServiceTable');
 }
 
 function renderServiceKpis() {
@@ -69,16 +70,16 @@ function renderServiceTable() {
 
   renderDataTable({
     containerId: 'tableSlot',
-    pageSize: 8,
+    pageSize: responsivePageSize(8),
     rerenderFnName: 'renderServiceTable',
     columns: [
-      { key: 'name', label: 'نام خدمت' },
+      { key: 'name', label: 'نام خدمت', mobilePrimary: true },
       { key: 'category', label: 'دسته‌بندی', render: s => s.category || '—' },
       { key: 'price', label: 'قیمت', render: s => `<span class="js-price-cell" data-id="${s.id}">${formatNumberWithCommas(s.price)}</span> ریال` },
-      { key: 'duration', label: 'مدت (دقیقه)', render: s => `<span class="js-duration-cell" data-id="${s.id}">${s.duration}</span>` },
-      { key: 'sales', label: 'تعداد فروش', render: s => calcServicePopularity(s.id) },
+      { key: 'duration', label: 'مدت (دقیقه)', render: s => `<span class="js-duration-cell" data-id="${s.id}">${s.duration}</span>`, hideOnMobile: true },
+      { key: 'sales', label: 'تعداد فروش', render: s => calcServicePopularity(s.id), hideOnMobile: true },
       {
-        key: 'active', label: 'وضعیت',
+        key: 'active', label: 'وضعیت', hideOnMobile: true,
         render: s => `<button class="status-badge status-badge--${s.active ? 'active' : 'inactive'}" onclick="toggleServiceStatus(${s.id})">${s.active ? 'فعال' : 'غیرفعال'}</button>`
       }
     ],

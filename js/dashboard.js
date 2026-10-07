@@ -15,7 +15,43 @@ function renderDashboardPage() {
   renderTopEmployeeChart();
   renderLoyaltyDistributionChart();
   renderExpenseBreakdownChart();
+  renderBackupReminder();
   _checkBackupReminder();
+}
+
+/* --------------------------------------------------------------------
+   دکمه بکاپ بالای داشبورد — بعد از گرفتن بکاپ، نشانگر زیرش هم بلافاصله به‌روز شود
+   -------------------------------------------------------------------- */
+function _backupFromDashboard() {
+  exportBackup();
+  renderBackupReminder();
+  showToast('فایل نسخه پشتیبان دانلود شد', 'success');
+}
+
+/**
+ * نشانگر همیشه‌حاضر زیر دکمه «تهیه نسخه پشتیبان» در داشبورد: تاریخ آخرین بکاپ
+ * و چند روز از آن گذشته. اگر بیش از ۷ روز گذشته یا هرگز بکاپ گرفته نشده،
+ * با رنگ هشدار نمایش داده می‌شود تا یادآوری حرفه‌ای و همیشه‌دیده باشد
+ * (نه فقط یک Toast موقت که بعد از چند ثانیه محو می‌شود).
+ */
+function renderBackupReminder() {
+  const el = document.getElementById('backupReminderSlot');
+  if (!el) return;
+  const { lastBackupDate } = getSettings();
+
+  if (!lastBackupDate) {
+    el.innerHTML = `<span style="font-size:var(--fs-small);color:var(--accent-rose);">هنوز نسخه پشتیبان تهیه نشده</span>`;
+    return;
+  }
+
+  const diffDays = Math.floor((Date.now() - new Date(lastBackupDate).getTime()) / (1000 * 60 * 60 * 24));
+  const dateLabel = toJalali(new Date(lastBackupDate));
+  const agoText = diffDays <= 0 ? 'امروز' : diffDays === 1 ? 'دیروز' : `${diffDays} روز پیش`;
+  const overdue = diffDays > 7;
+
+  el.innerHTML = `<span style="font-size:var(--fs-small);color:${overdue ? 'var(--accent-rose)' : 'var(--text-secondary)'};">
+    آخرین نسخه پشتیبان: ${dateLabel} (${agoText})${overdue ? ' — بهتر است یک نسخه جدید تهیه کنید' : ''}
+  </span>`;
 }
 
 /* --------------------------------------------------------------------

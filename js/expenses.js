@@ -39,6 +39,7 @@ function renderExpensesPage() {
   renderExpenseKpis();
   renderExpenseCharts();
   renderExpenseTable();
+  _watchResponsivePagination('renderExpenseTable');
 }
 
 function renderExpenseKpis() {
@@ -75,14 +76,14 @@ function renderExpenseTable() {
   const rows = _filteredExpenses();
   renderDataTable({
     containerId: 'tableSlot',
-    pageSize: 8,
+    pageSize: responsivePageSize(8),
     rerenderFnName: 'renderExpenseTable',
     columns: [
       { key: 'date', label: 'تاریخ' },
-      { key: 'title', label: 'عنوان' },
-      { key: 'category', label: 'دسته', render: e => EXPENSE_CATEGORY_LABELS[e.category] || e.category },
+      { key: 'title', label: 'عنوان', mobilePrimary: true },
+      { key: 'category', label: 'دسته', hideOnMobile: true, render: e => EXPENSE_CATEGORY_LABELS[e.category] || e.category },
       { key: 'amount', label: 'مبلغ', render: e => formatCurrency(e.amount) },
-      { key: 'description', label: 'توضیح', render: e => e.description || '—' }
+      { key: 'description', label: 'توضیح', hideOnMobile: true, render: e => e.description || '—' }
     ],
     rows,
     rowActions: (e) => `

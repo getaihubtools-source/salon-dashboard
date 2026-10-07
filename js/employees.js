@@ -38,6 +38,7 @@ function renderEmployeesPage() {
     onChipClick: () => {}
   });
   renderEmployeeTable();
+  _watchResponsivePagination('renderEmployeeTable');
 }
 
 function renderEmployeeKpis() {
@@ -76,17 +77,17 @@ function renderEmployeeTable() {
 
   renderDataTable({
     containerId: 'tableSlot',
-    pageSize: 8,
+    pageSize: responsivePageSize(8),
     rerenderFnName: 'renderEmployeeTable',
     columns: [
-      { key: 'name', label: 'نام', render: e => `<a href="employee-detail.html?id=${e.id}" style="color:var(--accent-gold)">${e.name}</a>` },
+      { key: 'name', label: 'نام', mobilePrimary: true, render: e => `<a href="employee-detail.html?id=${e.id}" style="color:var(--accent-gold)">${e.name}</a>` },
       { key: 'skill', label: 'تخصص' },
-      { key: 'phone', label: 'تلفن' },
-      { key: 'commissionPercent', label: 'کمیسیون (٪)', render: e => `<span class="js-commission-cell" data-id="${e.id}">${e.commissionPercent}</span>` },
-      { key: 'revenue', label: 'درآمد این ماه', render: e => formatCurrency(calcEmployeeRevenue(e.id, range)) },
+      { key: 'phone', label: 'تلفن', hideOnMobile: true },
+      { key: 'commissionPercent', label: 'کمیسیون (٪)', render: e => `<span class="js-commission-cell" data-id="${e.id}">${e.commissionPercent}</span>`, hideOnMobile: true },
+      { key: 'revenue', label: 'درآمد این ماه', render: e => formatCurrency(calcEmployeeRevenue(e.id, range)), hideOnMobile: true },
       { key: 'commission', label: 'سهم همکار', render: e => formatCurrency(calcCommissionAmount(e.id, range)) },
       {
-        key: 'active', label: 'وضعیت',
+        key: 'active', label: 'وضعیت', hideOnMobile: true,
         render: e => `<button class="status-badge status-badge--${e.active ? 'active' : 'inactive'}" onclick="toggleEmployeeStatus(${e.id})">${e.active ? 'فعال' : 'غیرفعال'}</button>`
       }
     ],

@@ -170,7 +170,7 @@ function renderAppointmentsList() {
       render: a => `
         <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
           <span class="status-badge status-badge--${APPOINTMENT_STATUS_BADGE_CLASS[a.status]}">${APPOINTMENT_STATUS_LABELS[a.status]}</span>
-          <select onchange="updateStatus(${a.id}, this.value)" style="background:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-soft);border-radius:8px;padding:4px 6px;font-size:12px;">
+          <select onchange="updateStatus(${a.id}, this.value)" style="background:var(--bg-primary);color:var(--text-primary);border:1px solid var(--border-soft);border-radius:8px;padding:4px 6px;font-size:var(--fs-small);">
             ${Object.entries(APPOINTMENT_STATUS_LABELS).map(([val, label]) => `<option value="${val}" ${a.status === val ? 'selected' : ''}>${label}</option>`).join('')}
           </select>
         </div>`

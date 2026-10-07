@@ -22,7 +22,7 @@
 }
 
 .sidebar__brand {
-  font-size: 17px;
+  font-size: var(--fs-section);
   font-weight: 700;
   color: var(--accent-gold);
   padding: 0 var(--space-2) var(--space-4);
@@ -117,7 +117,7 @@
   opacity: 0;
   transition: opacity var(--transition-fast);
 }
-.bottom-nav__label { font-size: 10.5px; line-height: 1; }
+.bottom-nav__label { font-size: var(--fs-micro); line-height: 1; }
 .bottom-nav__item.is-active { color: var(--accent-gold); }
 .bottom-nav__item.is-active .bottom-nav__icon::before { opacity: 1; }
 
@@ -147,7 +147,7 @@
 .more-sheet__item {
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   padding: 14px 6px; border-radius: 12px; background: var(--bg-card);
-  color: var(--text-secondary); font-size: 12px; text-align: center;
+  color: var(--text-secondary); font-size: var(--fs-small); text-align: center;
 }
 .more-sheet__icon { color: var(--text-secondary); }
 .more-sheet__item.is-active { color: var(--accent-gold); background: var(--accent-gold-dim); }

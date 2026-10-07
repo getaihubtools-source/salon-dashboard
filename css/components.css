@@ -43,21 +43,28 @@
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-card);
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-2) var(--space-3);
 }
 .kpi-card__title {
   color: var(--text-secondary);
-  font-size: var(--fs-small);
-  margin-bottom: 10px;
+  font-size: var(--fs-micro);
+  margin-bottom: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .kpi-card__value {
-  font-size: 21px;
+  font-size: var(--fs-base);
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
-/* واحد «ریال» داخل کارت KPI — کوچک‌تر و کم‌رنگ‌تر از خود عدد (آیتم ۳) */
+/* واحد «ریال» داخل کارت KPI — همیشه محسوسا کوچک‌تر و کم‌رنگ‌تر از خود عدد، در همه‌جای برنامه یکسان */
 .kpi-card__unit {
-  font-size: 11.5px;
+  font-size: var(--fs-tiny);
   font-weight: 400;
   color: var(--text-secondary);
   margin-right: 3px;
@@ -129,7 +136,7 @@
   padding: var(--space-4);
   margin-bottom: var(--space-4);
 }
-.profile-header__name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.profile-header__name { font-size: var(--fs-title); font-weight: 700; margin-bottom: 4px; }
 .profile-header__skill { color: var(--text-secondary); font-size: var(--fs-base); }
 
 /* --- فیلتر بار --- */
@@ -318,7 +325,7 @@
 }
 .today-appt:last-child { border-bottom: none; }
 .today-appt__time { min-width: 64px; font-weight: 700; color: var(--accent-gold); display: flex; flex-direction: column; }
-.today-appt__time small { font-weight: 400; color: var(--text-muted); font-size: 11px; }
+.today-appt__time small { font-weight: 400; color: var(--text-muted); font-size: var(--fs-micro); }
 .today-appt__info { flex: 1; min-width: 140px; }
 .today-appt__name { font-weight: 600; }
 .today-appt__meta { color: var(--text-secondary); font-size: var(--fs-small); margin-top: 2px; }
@@ -340,20 +347,20 @@
   border-radius: var(--radius-card); padding: 32px 26px;
   box-shadow: var(--shadow-card); text-align: center;
 }
-.license-gate__brand { color: var(--accent-gold); font-weight: 700; font-size: 15px; margin-bottom: 18px; }
-.license-gate__title { margin: 0 0 8px; font-size: 20px; }
+.license-gate__brand { color: var(--accent-gold); font-weight: 700; font-size: var(--fs-section); margin-bottom: 18px; }
+.license-gate__title { margin: 0 0 8px; font-size: var(--fs-section); }
 .license-gate__desc { color: var(--text-secondary); font-size: var(--fs-small); margin: 0 0 22px; line-height: 1.8; }
 .license-gate__card .form-field { text-align: right; margin-bottom: 16px; }
 .license-gate__card input {
   width: 100%; background: var(--bg-primary); border: 1px solid var(--border-soft);
-  border-radius: 8px; padding: 11px 12px; color: var(--text-primary); font-size: 14px;
+  border-radius: 8px; padding: 11px 12px; color: var(--text-primary); font-size: var(--fs-base);
   text-align: center; letter-spacing: 0.5px;
 }
 .license-gate__card input:focus { outline: none; border-color: var(--accent-gold); }
 .license-gate__vpn-note {
   margin-top: 14px; padding: 10px 12px; border-radius: 8px;
   background: var(--accent-gold-dim); color: var(--accent-gold);
-  font-size: 12px; line-height: 1.8;
+  font-size: var(--fs-small); line-height: 1.8;
 }
 .license-gate__message { margin-top: 14px; padding: 10px 12px; border-radius: 8px; font-size: var(--fs-small); }
 .license-gate__message--error { background: var(--accent-rose-dim); color: var(--accent-rose); }

@@ -42,16 +42,18 @@ function renderBarChart(canvasId, labels, series) {
       plugins: {
         legend: {
           display: series.length > 1,
-          labels: { color: '#A79FB0', font: { family: 'Vazirmatn' } }
+          labels: { color: '#A79FB0', font: { family: 'Vazirmatn', size: 11 }, boxWidth: 12, boxHeight: 12 }
         },
         tooltip: {
+          bodyFont: { family: 'Vazirmatn', size: 11 },
+          titleFont: { family: 'Vazirmatn', size: 11 },
           callbacks: { label: (ctx) => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}` }
         }
       },
       scales: {
-        x: { ticks: { color: '#A79FB0', font: { family: 'Vazirmatn' } }, grid: { display: false } },
+        x: { ticks: { color: '#A79FB0', font: { family: 'Vazirmatn', size: 11 } }, grid: { display: false } },
         y: {
-          ticks: { color: '#A79FB0', callback: (v) => Number(v).toLocaleString('en-US') },
+          ticks: { color: '#A79FB0', font: { family: 'Vazirmatn', size: 11 }, callback: (v) => Number(v).toLocaleString('en-US') },
           grid: { color: '#322C40' }
         }
       }
@@ -91,9 +93,11 @@ function renderPieChart(canvasId, labels, data, colors) {
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { color: '#A79FB0', font: { family: 'Vazirmatn' }, padding: 14 }
+          labels: { color: '#A79FB0', font: { family: 'Vazirmatn', size: 11 }, boxWidth: 12, boxHeight: 12, padding: 12 }
         },
         tooltip: {
+          bodyFont: { family: 'Vazirmatn', size: 11 },
+          titleFont: { family: 'Vazirmatn', size: 11 },
           callbacks: { label: (ctx) => `${ctx.label}: ${formatCurrency(ctx.raw)}` }
         }
       }

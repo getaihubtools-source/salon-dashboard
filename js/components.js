@@ -134,6 +134,40 @@ function renderLoyaltyBadge(tier) {
    -------------------------------------------------------------------- */
 const _tablePaginationState = {};
 
+/* --------------------------------------------------------------------
+   صفحه‌بندی ریسپانسیو — در موبایل فقط ۵ ردیف در هر صفحه (لیست خطی فشرده +
+   دکمه قبلی/بعدی)، در دسکتاپ همان تعداد قبلی هر صفحه. موقع چرخش صفحه یا
+   تغییر عرض (مثلاً چرخش گوشی)، جدول با تعداد درست دوباره رندر می‌شود.
+   -------------------------------------------------------------------- */
+const MOBILE_TABLE_BREAKPOINT = 720;
+const MOBILE_TABLE_PAGE_SIZE = 5;
+
+function _isMobileViewport() {
+  return window.matchMedia(`(max-width: ${MOBILE_TABLE_BREAKPOINT}px)`).matches;
+}
+
+function responsivePageSize(desktopPageSize) {
+  return _isMobileViewport() ? MOBILE_TABLE_PAGE_SIZE : desktopPageSize;
+}
+
+const _responsivePaginationWatchers = {};
+function _watchResponsivePagination(rerenderFnName) {
+  if (_responsivePaginationWatchers[rerenderFnName]) return; // فقط یک‌بار برای هر صفحه گوش بده
+  _responsivePaginationWatchers[rerenderFnName] = true;
+  let wasMobile = _isMobileViewport();
+  let timer;
+  window.addEventListener('resize', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      const isMobile = _isMobileViewport();
+      if (isMobile !== wasMobile) {
+        wasMobile = isMobile;
+        if (typeof window[rerenderFnName] === 'function') window[rerenderFnName]();
+      }
+    }, 200);
+  });
+}
+
 /**
  * jc: config = {containerId, columns, rows, rowActions, emptyTitle, emptyHint,
  *   pageSize?: number, rerenderFnName?: string}
@@ -175,10 +209,16 @@ function renderDataTable(config) {
   const thead = columns.map(c => `<th data-key="${c.key}">${c.label}</th>`).join('') +
     (rowActions ? '<th>عملیات</th>' : '');
 
+  // عنوان اصلی ردیف در نمای موبایل: اگر ستونی صریحاً mobilePrimary:true داشته باشد همان،
+  // وگرنه اولین ستون غیرمخفی — بقیه‌ی ستون‌های غیرمخفی زیرش به‌صورت یک خط فرعی و فشرده می‌آیند
+  const primaryCol = columns.find(c => c.mobilePrimary) || columns.find(c => !c.hideOnMobile) || columns[0];
+  const firstVisibleKey = primaryCol.key;
+
   const tbody = displayRows.map(row => {
     const tds = columns.map(c => {
       const val = typeof c.render === 'function' ? c.render(row) : (row[c.key] ?? '');
-      return `<td data-label="${c.label}">${val}</td>`;
+      const cls = [c.hideOnMobile ? 'col-mobile-hide' : '', c.key === firstVisibleKey ? 'col-mobile-primary' : ''].filter(Boolean).join(' ');
+      return `<td data-label="${c.label}"${cls ? ` class="${cls}"` : ''}>${val}</td>`;
     }).join('');
     const actionsTd = rowActions ? `<td class="col-actions" data-label="عملیات">${rowActions(row)}</td>` : '';
     return `<tr data-id="${row.id}">${tds}${actionsTd}</tr>`;
@@ -234,7 +274,7 @@ function renderCustomRangeFields(containerId, state, onApply) {
     <div class="filter-bar" style="margin-top:-4px;">
       <input id="${containerId}_from" class="filter-bar__search" style="flex:0 0 150px;" type="text" placeholder="از تاریخ" value="${state.customFrom || ''}" />
       <input id="${containerId}_to" class="filter-bar__search" style="flex:0 0 150px;" type="text" placeholder="تا تاریخ" value="${state.customTo || ''}" />
-      <button class="btn btn-primary" onclick="_applyCustomRange('${containerId}')">اعمال بازه</button>
+      <button class="btn btn-primary" onclick="_applyCustomRange('${containerId}')">اعمال تغییر</button>
     </div>`;
   attachJalaliDatePicker(document.getElementById(`${containerId}_from`));
   attachJalaliDatePicker(document.getElementById(`${containerId}_to`));

@@ -24,6 +24,7 @@ function renderCustomersPage() {
     onChipClick: (val) => { _customerState.tier = val; renderCustomerTable(); }
   });
   renderCustomerTable();
+  _watchResponsivePagination('renderCustomerTable');
 }
 
 function renderCustomerKpis() {
@@ -55,16 +56,16 @@ function renderCustomerTable() {
 
   renderDataTable({
     containerId: 'tableSlot',
-    pageSize: 8,
+    pageSize: responsivePageSize(8),
     rerenderFnName: 'renderCustomerTable',
     columns: [
-      { key: 'name', label: 'نام' },
+      { key: 'name', label: 'نام', mobilePrimary: true },
       { key: 'phone', label: 'تلفن' },
-      { key: 'lastVisit', label: 'آخرین مراجعه' },
-      { key: 'visitCount', label: 'تعداد مراجعه' },
-      { key: 'totalSpent', label: 'مجموع خرید', render: c => formatCurrency(c.totalSpent) },
+      { key: 'lastVisit', label: 'آخرین مراجعه', hideOnMobile: true },
+      { key: 'visitCount', label: 'تعداد مراجعه', hideOnMobile: true },
+      { key: 'totalSpent', label: 'مجموع خرید', render: c => formatCurrency(c.totalSpent), hideOnMobile: true },
       { key: 'loyaltyTier', label: 'سطح', render: c => renderLoyaltyBadge(c.loyaltyTier) },
-      { key: 'notes', label: 'یادداشت', render: c => `<span class="js-notes-cell" data-id="${c.id}">${c.notes || '—'}</span>` }
+      { key: 'notes', label: 'یادداشت', render: c => `<span class="js-notes-cell" data-id="${c.id}">${c.notes || '—'}</span>`, hideOnMobile: true }
     ],
     rows,
     rowActions: (c) => `

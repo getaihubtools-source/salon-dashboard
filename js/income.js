@@ -55,6 +55,7 @@ function renderIncomePage() {
   renderIncomeKpis();
   renderIncomeCharts();
   renderIncomeTable();
+  _watchResponsivePagination('renderIncomeTable');
 }
 
 function renderIncomeKpis() {
@@ -107,15 +108,15 @@ function renderIncomeTable() {
 
   renderDataTable({
     containerId: 'tableSlot',
-    pageSize: 8,
+    pageSize: responsivePageSize(8),
     rerenderFnName: 'renderIncomeTable',
     columns: [
       { key: 'date', label: 'تاریخ' },
-      { key: 'customerId', label: 'مشتری', render: t => { const c = customers.find(x => x.id === t.customerId); return c ? c.name : '—'; } },
-      { key: 'serviceId', label: 'خدمت', render: t => { const s = services.find(x => x.id === t.serviceId); return s ? s.name : '—'; } },
-      { key: 'employeeId', label: 'همکار', render: t => { const e = employees.find(x => x.id === t.employeeId); return e ? e.name : '—'; } },
-      { key: 'category', label: 'دسته', render: t => TX_CATEGORY_LABELS[t.category] || t.category },
-      { key: 'paymentMethod', label: 'روش پرداخت', render: t => PAYMENT_METHOD_LABELS[t.paymentMethod] || t.paymentMethod },
+      { key: 'customerId', label: 'مشتری', mobilePrimary: true, render: t => { const c = customers.find(x => x.id === t.customerId); return c ? c.name : '—'; } },
+      { key: 'serviceId', label: 'خدمت', hideOnMobile: true, render: t => { const s = services.find(x => x.id === t.serviceId); return s ? s.name : '—'; } },
+      { key: 'employeeId', label: 'همکار', hideOnMobile: true, render: t => { const e = employees.find(x => x.id === t.employeeId); return e ? e.name : '—'; } },
+      { key: 'category', label: 'دسته', hideOnMobile: true, render: t => TX_CATEGORY_LABELS[t.category] || t.category },
+      { key: 'paymentMethod', label: 'روش پرداخت', hideOnMobile: true, render: t => PAYMENT_METHOD_LABELS[t.paymentMethod] || t.paymentMethod },
       { key: 'amount', label: 'مبلغ', render: t => formatCurrency(t.amount) }
     ],
     rows,
