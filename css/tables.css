@@ -61,8 +61,8 @@ table.data-table {
 }
 
 .icon-btn {
-  width: 30px;
-  height: 30px;
+  width: var(--touch-target);
+  height: var(--touch-target);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -83,7 +83,7 @@ table.data-table {
 }
 
 .table-empty__title {
-  font-size: var(--fs-section);
+  font-size: var(--fs-card-title);
   color: var(--text-primary);
   margin-bottom: var(--space-1);
 }
@@ -169,5 +169,5 @@ table.data-table {
     gap: 4px;
   }
   .data-table tbody td.col-actions::before { content: none; }
-  .icon-btn { width: 28px; height: 28px; }
+  .icon-btn { width: var(--touch-target); height: var(--touch-target); }
 }

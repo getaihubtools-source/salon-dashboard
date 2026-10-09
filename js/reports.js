@@ -155,7 +155,7 @@ function renderFinancialKpis() {
     renderKpiCard({ title: 'درآمد کل', value: formatCurrency(revenue), variant: 'positive' }),
     renderKpiCard({ title: 'پورسانت تیم', value: formatCurrency(commission) }),
     renderKpiCard({ title: 'هزینه کل', value: formatCurrency(expense), variant: 'negative' }),
-    renderKpiCard({ title: 'سود واقعی', value: formatCurrency(profit), variant: profit >= 0 ? 'positive' : 'negative' })
+    renderKpiCard({ title: 'سود واقعی', value: formatCurrency(profit), variant: profit >= 0 ? 'positive' : 'negative', size: 'primary' })
   ];
 
   const mom = getMonthOverMonthComparison();
@@ -174,7 +174,7 @@ function renderEmployeeRankingTable() {
   const rows = generateEmployeeRanking();
   renderDataTable({
     containerId: 'employeeRankingSlot',
-    pageSize: 8,
+    pageSize: 5,
     rerenderFnName: 'renderEmployeeRankingTable',
     columns: [
       { key: 'name', label: 'عضو تیم' },
@@ -247,7 +247,7 @@ function renderFollowUpTable() {
   const rows = getFollowUpCustomers();
   renderDataTable({
     containerId: 'followUpSlot',
-    pageSize: 8,
+    pageSize: 5,
     rerenderFnName: 'renderFollowUpTable',
     columns: [
       { key: 'name', label: 'مشتری' },

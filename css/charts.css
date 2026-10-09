@@ -17,7 +17,7 @@
 }
 
 .chart-card__title {
-  font-size: var(--fs-section);
+  font-size: var(--fs-card-title);
   margin-bottom: var(--space-3);
 }
 

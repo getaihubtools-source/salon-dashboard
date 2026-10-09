@@ -32,7 +32,11 @@
 }
 .btn-danger:hover { background: var(--accent-rose-dim); }
 
-/* --- کارت KPI --- */
+/* --------------------------------------------------------------------
+   کارت KPI — دو نوع استاندارد: Primary (عدد هدلاین/مهم) و Secondary
+   (عدد تکمیلی). هر دو از یک ساختار و فاصله‌گذاری مشترک استفاده می‌کنند؛
+   فقط سایز عدد فرق دارد — هیچ‌وقت عدد مهم برای جا شدن در کارت کوچک نمی‌شود.
+   -------------------------------------------------------------------- */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -43,18 +47,20 @@
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-card);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3);
+  min-width: 0; /* اجازه بده ellipsis روی عدد بزرگ هم کار کند، بدون اینکه گرید را بشکند */
 }
 .kpi-card__title {
   color: var(--text-secondary);
-  font-size: var(--fs-micro);
-  margin-bottom: 6px;
+  font-size: var(--fs-card-title);
+  font-weight: 600;
+  margin-bottom: var(--space-1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .kpi-card__value {
-  font-size: var(--fs-base);
+  font-size: var(--fs-kpi-secondary); /* پیش‌فرض Secondary — کارت‌های Primary این را override می‌کنند */
   font-weight: 700;
   line-height: 1.25;
   white-space: nowrap;
@@ -62,12 +68,22 @@
   text-overflow: ellipsis;
   display: block;
 }
+/* کارت KPI اصلی/هدلاین — عدد به‌وضوح بزرگ‌تر (طبق سیستم طراحی)، تاکید بصری ملایم با نوار کناری طلایی */
+.kpi-card--primary {
+  border-inline-start: 3px solid var(--accent-gold);
+}
+.kpi-card--primary .kpi-card__value {
+  font-size: var(--fs-kpi-primary);
+}
+.kpi-card--primary .kpi-card__title {
+  color: var(--text-primary);
+}
 /* واحد «ریال» داخل کارت KPI — همیشه محسوسا کوچک‌تر و کم‌رنگ‌تر از خود عدد، در همه‌جای برنامه یکسان */
 .kpi-card__unit {
-  font-size: var(--fs-tiny);
+  font-size: var(--fs-unit);
   font-weight: 400;
   color: var(--text-secondary);
-  margin-right: 3px;
+  margin-right: 4px;
 }
 .kpi-card--gold .kpi-card__value   { color: var(--tier-gold); }
 .kpi-card--silver .kpi-card__value { color: var(--tier-silver); }
@@ -209,7 +225,7 @@
   box-shadow: var(--shadow-card);
 }
 .modal-box h2 {
-  font-size: var(--fs-section);
+  font-size: var(--fs-card-title);
   margin: 0 0 var(--space-3);
 }
 .form-field { margin-bottom: var(--space-3); }
@@ -335,7 +351,7 @@
 /* --------------------------------------------------------------------
    گیت فعال‌سازی لایسنس — تمام‌صفحه، روی همه‌چیز می‌نشیند
    -------------------------------------------------------------------- */
-#licenseGateOverlay {
+#licenseGateOverlay, #appLockOverlay {
   position: fixed; inset: 0; z-index: 9999;
   background: var(--bg-primary);
   display: flex; align-items: center; justify-content: center;
@@ -347,8 +363,8 @@
   border-radius: var(--radius-card); padding: 32px 26px;
   box-shadow: var(--shadow-card); text-align: center;
 }
-.license-gate__brand { color: var(--accent-gold); font-weight: 700; font-size: var(--fs-section); margin-bottom: 18px; }
-.license-gate__title { margin: 0 0 8px; font-size: var(--fs-section); }
+.license-gate__brand { color: var(--accent-gold); font-weight: 700; font-size: var(--fs-card-title); margin-bottom: 18px; }
+.license-gate__title { margin: 0 0 8px; font-size: var(--fs-card-title); }
 .license-gate__desc { color: var(--text-secondary); font-size: var(--fs-small); margin: 0 0 22px; line-height: 1.8; }
 .license-gate__card .form-field { text-align: right; margin-bottom: 16px; }
 .license-gate__card input {

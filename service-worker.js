@@ -4,7 +4,7 @@
    هیچ دسترسی و دخالتی ندارد — آن API کاملاً جداست و اینجا لمس نمی‌شود.
    ========================================================================== */
 
-const CACHE_NAME = 'salon-dashboard-shell-v4';
+const CACHE_NAME = 'salon-dashboard-shell-v7';
 
 const APP_SHELL = [
   './',
@@ -12,6 +12,7 @@ const APP_SHELL = [
   'services.html', 'appointments.html', 'income.html', 'expenses.html',
   'reports.html', 'settings.html',
   'css/variables.css', 'css/layout.css', 'css/tables.css', 'css/components.css', 'css/charts.css',
+  'js/license.js', 'js/applock.js', 'js/applock-settings.js',
   'js/utils.js', 'js/db.js', 'js/components.js', 'js/charts.js', 'js/datepicker.js',
   'js/customers.js', 'js/employees.js', 'js/employee-detail.js', 'js/services.js',
   'js/appointments.js', 'js/income.js', 'js/expenses.js', 'js/reports.js',

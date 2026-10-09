@@ -13,12 +13,27 @@ const NAV_ICONS = {
   income: '<rect x="3" y="6.5" width="18" height="12.5" rx="2"/><path d="M3 10.2h18"/><circle cx="16.5" cy="14.4" r="1.4"/>',
   expenses: '<path d="M6 3.5h9l3 3v14l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3V6a2.5 2.5 0 0 1 .5-1.5"/><path d="M8.5 10h7M8.5 13.4h7M8.5 16.8h4"/>',
   reports: '<path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2.5 20h19"/>',
-  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2.05 2.05 0 1 1-2.9 2.9l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V19.6a2.05 2.05 0 1 1-4.1 0v-.09a1.7 1.7 0 0 0-1.1-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2.05 2.05 0 1 1-2.9-2.9l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H4.4a2.05 2.05 0 1 1 0-4.1h.09a1.7 1.7 0 0 0 1.55-1.1 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2.05 2.05 0 1 1 2.9-2.9l.06.06a1.7 1.7 0 0 0 1.87.34H10.5a1.7 1.7 0 0 0 1-1.55V4.4a2.05 2.05 0 1 1 4.1 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2.05 2.05 0 1 1 2.9 2.9l-.06.06a1.7 1.7 0 0 0-.34 1.87V10.5a1.7 1.7 0 0 0 1.55 1h.09a2.05 2.05 0 1 1 0 4.1h-.09a1.7 1.7 0 0 0-1.55 1Z"/>',
+  settings: '<line x1="4" y1="6.5" x2="20" y2="6.5"/><circle cx="9" cy="6.5" r="2"/><line x1="4" y1="12" x2="20" y2="12"/><circle cx="15" cy="12" r="2"/><line x1="4" y1="17.5" x2="20" y2="17.5"/><circle cx="10.5" cy="17.5" r="2"/>',
   more: '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'
 };
 
 function _navIconSvg(key, size = 20) {
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${NAV_ICONS[key] || ''}</svg>`;
+}
+
+/* آیکون‌های Action روی ردیف‌های جدول (ویرایش/حذف/استرداد/بیعانه) و هشدار —
+   دقیقاً همان خانواده‌ی خطی NAV_ICONS، بدون هیچ ایموجی، برای یک‌دستی کامل */
+const ACTION_ICONS = {
+  edit: '<path d="M14.5 4.5l5 5L8 21H3v-5Z"/><path d="M12.5 6.5l5 5"/>',
+  delete: '<path d="M4 7h16"/><path d="M9 7V4.6A1.1 1.1 0 0 1 10.1 3.5h3.8A1.1 1.1 0 0 1 15 4.6V7"/><path d="M6.3 7l.9 12.2A2 2 0 0 0 9.2 21h5.6a2 2 0 0 0 2-1.8L17.7 7"/>',
+  refund: '<path d="M4.5 10h9.5a5 5 0 1 1 0 10h-2.3"/><path d="M8 6 4.5 10 8 14"/>',
+  deposit: '<rect x="3" y="7" width="18" height="11" rx="2.2"/><circle cx="12" cy="12.5" r="2.3"/>',
+  warning: '<path d="M12 3.8 2.3 20.5h19.4Z"/><path d="M12 9.8v4.3"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/>',
+  backup: '<path d="M12 4v11"/><path d="M7.3 10.7 12 15.3l4.7-4.6"/><path d="M5 19.3h14"/>'
+};
+
+function _actionIconSvg(key, size = 16) {
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ACTION_ICONS[key] || ''}</svg>`;
 }
 
 const NAV_ITEMS = [
@@ -102,9 +117,13 @@ function toggleMoreSheet() {
 /* --------------------------------------------------------------------
    کارت KPI
    -------------------------------------------------------------------- */
-function renderKpiCard({ title, value, variant }) {
-  const cls = variant ? `kpi-card--${variant}` : '';
-  // واحد «ریال» در انتهای مقدار (در صورت وجود) کوچک و کم‌رنگ‌تر از عدد اصلی نمایش داده شود (آیتم ۳)
+/**
+ * کارت KPI — size: 'primary' برای عدد هدلاین/مهم (بزرگ‌تر، طبق سیستم طراحی)،
+ * پیش‌فرض 'secondary' برای اعداد تکمیلی. variant رنگ را مشخص می‌کند (مستقل از size).
+ */
+function renderKpiCard({ title, value, variant, size }) {
+  const cls = [size === 'primary' ? 'kpi-card--primary' : '', variant ? `kpi-card--${variant}` : ''].filter(Boolean).join(' ');
+  // واحد «ریال» در انتهای مقدار (در صورت وجود) کوچک و کم‌رنگ‌تر از عدد اصلی نمایش داده شود
   const displayValue = String(value).replace(/\s?ریال$/, ' <span class="kpi-card__unit">ریال</span>');
   return `
     <div class="kpi-card ${cls}">

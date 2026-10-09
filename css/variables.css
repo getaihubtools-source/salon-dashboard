@@ -31,24 +31,37 @@
   --text-secondary: #A79FB0;
   --text-muted:     #6F6779;
 
-  /* تایپوگرافی — مقیاس استاندارد و یک‌دست در کل برنامه (دسکتاپ و موبایل) */
+  /* --------------------------------------------------------------------
+     مقیاس تایپوگرافی استاندارد — Global Design System
+     همه‌ی صفحات (داشبورد، نوبت‌ها، مشتریان، درآمد، بیشتر، تنظیمات و ...)
+     فقط از همین متغیرها استفاده می‌کنند؛ هیچ‌جا سایز دلخواه/پراکنده نباشد.
+     -------------------------------------------------------------------- */
   --font-main: 'Vazirmatn', Tahoma, sans-serif;
-  --fs-title:    24px;   /* عنوان بالای صفحه (h1) + نام در پروفایل همکار */
-  --fs-section:  15px;   /* عنوان کارت‌ها/Modal/گیت لایسنس/تیترهای بخش — همیشه همین یک سایز */
-  --fs-base:     14px;   /* متن اصلی: جدول، دکمه، فرم، Toast */
-  --fs-small:    12.5px; /* متن فرعی: بج، چیپ، لیبل فرم، سربرگ جدول */
-  --fs-micro:    10.5px; /* برچسب خیلی کوچک: عنوان کارت KPI، Bottom Nav، فلش مرتب‌سازی */
-  --fs-tiny:     9px;    /* کوچک‌ترین: واحد «ریال» کنار عدد کارت KPI */
+  --fs-title:         26px;   /* عنوان بالای صفحه (h1) */
+  --fs-section:       19px;   /* تیتر بخش داخل صفحه (مثلاً «رتبه‌بندی همکاران») */
+  --fs-card-title:    14px;   /* عنوان/برچسب کارت‌ها (مثلاً «درآمد این ماه» بالای کارت KPI) */
+  --fs-kpi-primary:   26px;   /* عدد کارت KPI اصلی/هدلاین (مثلاً سود واقعی، درآمد کل) */
+  --fs-kpi-secondary: 19px;   /* عدد کارت‌های KPI فرعی/تکمیلی */
+  --fs-base:          14px;   /* متن اصلی: جدول، دکمه، فرم، Toast */
+  --fs-small:         12.5px; /* متن فرعی/Meta: بج، چیپ، لیبل فرم، سربرگ جدول */
+  --fs-micro:         10.5px; /* فقط برای برچسب‌های خیلی ریز غیرِعددی (Bottom Nav، فلش مرتب‌سازی) */
+  --fs-unit:          12px;   /* واحد «ریال» کنار عدد KPI — کوچک‌تر از عدد ولی همچنان خوانا */
 
-  /* فاصله‌ها */
+  /* --------------------------------------------------------------------
+     مقیاس فاصله‌گذاری ۴پیکسلی — Global Design System
+     -------------------------------------------------------------------- */
   --radius-card: 14px;
   --radius-btn:  10px;
   --radius-chip: 999px;
   --space-1: 4px;
   --space-2: 8px;
-  --space-3: 14px;
-  --space-4: 20px;
+  --space-3: 16px;
+  --space-4: 24px;
   --space-5: 32px;
+  --space-6: 40px;
+
+  /* حداقل ارتفاع لمس‌پذیر استاندارد برای دکمه/آیکون در موبایل */
+  --touch-target: 40px;
 
   --shadow-card: 0 6px 20px rgba(0, 0, 0, 0.28);
   --transition-fast: 140ms ease;
@@ -71,7 +84,9 @@ html, body {
   color-scheme: dark;
 }
 
-select { color-scheme: dark; }
+select { color-scheme: dark; background-color: var(--bg-card); color: var(--text-primary); }
+select option { background-color: var(--bg-card); color: var(--text-primary); }
+select option:checked, select option:hover { background-color: var(--bg-secondary); }
 
 a { color: inherit; text-decoration: none; }
 button { font-family: inherit; cursor: pointer; }

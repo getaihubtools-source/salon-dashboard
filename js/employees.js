@@ -58,7 +58,7 @@ function renderEmployeeKpis() {
     renderKpiCard({ title: 'تعداد کل همکاران', value: all.length }),
     renderKpiCard({ title: 'همکاران فعال', value: active.length, variant: 'gold' }),
     renderKpiCard({ title: 'برترین همکار (این ماه)', value: top.name }),
-    renderKpiCard({ title: 'جمع کمیسیون پرداختی', value: formatCurrency(totalCommission) })
+    renderKpiCard({ title: 'جمع کمیسیون پرداختی', value: formatCurrency(totalCommission), size: 'primary' })
   ].join('');
 }
 
@@ -93,8 +93,8 @@ function renderEmployeeTable() {
     ],
     rows,
     rowActions: (e) => `
-      <button class="icon-btn" onclick="editEmployee(${e.id})" title="ویرایش">✎</button>
-      <button class="icon-btn danger" onclick="deleteEmployee(${e.id})" title="حذف">✕</button>
+      <button class="icon-btn" onclick="editEmployee(${e.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
+      <button class="icon-btn danger" onclick="deleteEmployee(${e.id})" title="حذف">${_actionIconSvg('delete')}</button>
     `,
     emptyTitle: 'هنوز همکاری ثبت نشده',
     emptyHint: 'با دکمه «افزودن همکار» بالای صفحه شروع کنید.'

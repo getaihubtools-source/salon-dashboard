@@ -23,16 +23,7 @@
 
 <div class="app-shell">
   <main class="main">
-    <div class="page-header">
-      <div>
-        <h1>داشبورد</h1>
-        <div class="page-header__subtitle">دید کلی مالی و عملکردی سالن در یک نگاه</div>
-      </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;">
-        <button class="btn btn-ghost" onclick="_backupFromDashboard()">تهیه نسخه پشتیبان</button>
-        <div id="backupReminderSlot"></div>
-      </div>
-    </div>
+    <div class="dash-header" id="dashHeaderSlot"></div>
 
     <div id="kpiSlot" class="kpi-grid"></div>
 
@@ -72,6 +63,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="js/license.js"></script>
+<script src="js/applock.js"></script>
 <script src="js/utils.js"></script>
 <script src="js/db.js"></script>
 <script src="js/components.js"></script>

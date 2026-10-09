@@ -64,7 +64,7 @@ function renderIncomeKpis() {
   const avg = txCount ? Math.round(total / txCount) : 0;
 
   document.getElementById('kpiSlot').innerHTML = [
-    renderKpiCard({ title: 'کل درآمد', value: formatCurrency(total), variant: 'gold' }),
+    renderKpiCard({ title: 'کل درآمد', value: formatCurrency(total), variant: 'gold', size: 'primary' }),
     renderKpiCard({ title: 'تعداد تراکنش', value: txCount }),
     renderKpiCard({ title: 'میانگین هر تراکنش', value: formatCurrency(avg) })
   ].join('');
@@ -121,9 +121,9 @@ function renderIncomeTable() {
     ],
     rows,
     rowActions: (t) => `
-      <button class="icon-btn" onclick="editTransaction(${t.id})" title="ویرایش">✎</button>
-      <button class="icon-btn danger" onclick="deleteTransaction(${t.id})" title="حذف">✕</button>
-      <button class="icon-btn" onclick="refundTransaction(${t.id})" title="ثبت استرداد">↩</button>
+      <button class="icon-btn" onclick="editTransaction(${t.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
+      <button class="icon-btn danger" onclick="deleteTransaction(${t.id})" title="حذف">${_actionIconSvg('delete')}</button>
+      <button class="icon-btn" onclick="refundTransaction(${t.id})" title="ثبت استرداد">${_actionIconSvg('refund')}</button>
     `,
     emptyTitle: 'تراکنشی برای این دوره ثبت نشده'
   });

@@ -85,8 +85,8 @@ function renderServiceTable() {
     ],
     rows,
     rowActions: (s) => `
-      <button class="icon-btn" onclick="editService(${s.id})" title="ویرایش">✎</button>
-      <button class="icon-btn danger" onclick="deleteService(${s.id})" title="حذف">✕</button>
+      <button class="icon-btn" onclick="editService(${s.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
+      <button class="icon-btn danger" onclick="deleteService(${s.id})" title="حذف">${_actionIconSvg('delete')}</button>
     `,
     emptyTitle: 'هنوز خدمتی ثبت نشده',
     emptyHint: 'با دکمه «افزودن خدمت» بالای صفحه شروع کنید.'

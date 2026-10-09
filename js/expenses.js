@@ -48,7 +48,7 @@ function renderExpenseKpis() {
   const topCat = byCat[0] || { label: '—', total: 0 };
 
   document.getElementById('kpiSlot').innerHTML = [
-    renderKpiCard({ title: 'هزینه کل', value: formatCurrency(total), variant: 'bronze' }),
+    renderKpiCard({ title: 'هزینه کل', value: formatCurrency(total), variant: 'bronze', size: 'primary' }),
     renderKpiCard({ title: 'بیشترین دسته هزینه', value: topCat.label }),
     renderKpiCard({ title: 'تعداد ثبت هزینه', value: query('expenses', e => matchesDateFilter(e.date, _expenseState)).length })
   ].join('');
@@ -87,8 +87,8 @@ function renderExpenseTable() {
     ],
     rows,
     rowActions: (e) => `
-      <button class="icon-btn" onclick="editExpense(${e.id})" title="ویرایش">✎</button>
-      <button class="icon-btn danger" onclick="deleteExpense(${e.id})" title="حذف">✕</button>
+      <button class="icon-btn" onclick="editExpense(${e.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
+      <button class="icon-btn danger" onclick="deleteExpense(${e.id})" title="حذف">${_actionIconSvg('delete')}</button>
     `,
     emptyTitle: 'هنوز هزینه‌ای ثبت نشده',
     emptyHint: 'با دکمه «افزودن هزینه» بالای صفحه شروع کنید.'

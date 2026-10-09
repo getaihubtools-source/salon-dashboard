@@ -31,7 +31,7 @@ function renderCustomerKpis() {
   const all = getAll('customers');
   const count = tier => all.filter(c => c.loyaltyTier === tier).length;
   document.getElementById('kpiSlot').innerHTML = [
-    renderKpiCard({ title: 'تعداد کل مشتریان', value: all.length.toLocaleString('en-US') }),
+    renderKpiCard({ title: 'تعداد کل مشتریان', value: all.length.toLocaleString('en-US'), size: 'primary' }),
     renderKpiCard({ title: 'مشتریان طلایی', value: count('gold'), variant: 'gold' }),
     renderKpiCard({ title: 'مشتریان نقره‌ای', value: count('silver'), variant: 'silver' }),
     renderKpiCard({ title: 'مشتریان برنزی', value: count('bronze'), variant: 'bronze' }),
@@ -69,8 +69,8 @@ function renderCustomerTable() {
     ],
     rows,
     rowActions: (c) => `
-      <button class="icon-btn" onclick="editCustomer(${c.id})" title="ویرایش">✎</button>
-      <button class="icon-btn danger" onclick="deleteCustomer(${c.id})" title="حذف">✕</button>
+      <button class="icon-btn" onclick="editCustomer(${c.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
+      <button class="icon-btn danger" onclick="deleteCustomer(${c.id})" title="حذف">${_actionIconSvg('delete')}</button>
     `,
     emptyTitle: 'هنوز مشتری‌ای ثبت نشده',
     emptyHint: 'با دکمه «افزودن مشتری» بالای صفحه شروع کنید.'

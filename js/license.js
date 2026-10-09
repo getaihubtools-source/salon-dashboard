@@ -129,7 +129,7 @@ function _showLicenseGate(prefillError) {
 
       <button class="btn btn-primary" id="licenseActivateBtn" style="width:100%;justify-content:center;">فعال‌سازی</button>
 
-      <div class="license-gate__vpn-note">⚠️ توجه: برای فعال‌سازی، ابتدا VPN یا فیلترشکن خود را روشن نمایید.</div>
+      <div class="license-gate__vpn-note" style="display:flex;align-items:center;gap:6px;">${_actionIconSvg('warning')}<span>توجه: برای فعال‌سازی، ابتدا VPN یا فیلترشکن خود را روشن نمایید.</span></div>
 
       <div id="licenseGateMessage" class="license-gate__message" style="display:none;"></div>
     </div>

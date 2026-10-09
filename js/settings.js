@@ -9,6 +9,7 @@ function renderSettingsPage() {
   renderLoyaltyForm();
   renderBusinessHoursForm();
   renderBackupSection();
+  renderAppLockSection();
   renderAboutContactSection();
 }
 

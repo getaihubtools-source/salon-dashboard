@@ -49,7 +49,7 @@ function renderAppointmentKpis() {
   const pending = all.filter(a => a.status === 'pending' || a.status === 'confirmed');
   const monthCancelled = all.filter(a => isDateInRange(a.date, 'month') && (a.status === 'cancelled' || a.status === 'no_show'));
   document.getElementById('kpiSlot').innerHTML = [
-    renderKpiCard({ title: 'نوبت‌های امروز', value: today.length }),
+    renderKpiCard({ title: 'نوبت‌های امروز', value: today.length, size: 'primary' }),
     renderKpiCard({ title: 'نوبت‌های این هفته', value: week.length }),
     renderKpiCard({ title: 'در انتظار تأیید/انجام', value: pending.length, variant: 'gold' }),
     renderKpiCard({ title: 'لغو/عدم‌حضور این ماه', value: monthCancelled.length })
@@ -77,12 +77,19 @@ function renderTodayReminders() {
 /* --------------------------------------------------------------------
    ناوبری تاریخ: امروز / فردا / این هفته / تاریخ دلخواه
    -------------------------------------------------------------------- */
+function _tomorrowJalali() {
+  const d = fromJalali(todayJalali());
+  d.setDate(d.getDate() + 1);
+  return toJalali(d);
+}
+
 function renderDateNav() {
   const el = document.getElementById('dateNavSlot');
+  const isTomorrow = _apptState.mode === 'day' && _apptState.selectedDate === _tomorrowJalali();
   el.innerHTML = `
     <div class="filter-bar">
       <button class="chip ${_apptState.mode === 'day' && _apptState.selectedDate === todayJalali() ? 'is-active' : ''}" onclick="_goToday()">امروز</button>
-      <button class="chip" onclick="_goTomorrow()">فردا</button>
+      <button class="chip ${isTomorrow ? 'is-active' : ''}" onclick="_goTomorrow()">فردا</button>
       <button class="chip ${_apptState.mode === 'week' ? 'is-active' : ''}" onclick="_goThisWeek()">این هفته</button>
       <input id="dateNavInput" class="filter-bar__search" style="flex:0 0 150px;" type="text" value="${_apptState.selectedDate}" placeholder="تاریخ دلخواه" />
       <button class="chip" onclick="_shiftDay(-1)">‹ روز قبل</button>
@@ -99,10 +106,8 @@ function renderDateNav() {
 
 function _goToday() { _apptState.mode = 'day'; _apptState.selectedDate = todayJalali(); renderDateNav(); renderAppointmentsList(); }
 function _goTomorrow() {
-  const d = fromJalali(todayJalali());
-  d.setDate(d.getDate() + 1);
   _apptState.mode = 'day';
-  _apptState.selectedDate = toJalali(d);
+  _apptState.selectedDate = _tomorrowJalali();
   renderDateNav();
   renderAppointmentsList();
 }
@@ -184,8 +189,8 @@ function renderAppointmentsList() {
     columns,
     rows,
     rowActions: (a) => `
-      ${(a.depositAmount > 0 && !a.depositPaid) ? `<button class="icon-btn" onclick="recordDepositPayment(${a.id})" title="ثبت دریافت بیعانه">💰</button>` : ''}
-      <button class="icon-btn" onclick="editAppointment(${a.id})" title="ویرایش">✎</button>
+      ${(a.depositAmount > 0 && !a.depositPaid) ? `<button class="icon-btn" onclick="recordDepositPayment(${a.id})" title="ثبت دریافت بیعانه">${_actionIconSvg('deposit')}</button>` : ''}
+      <button class="icon-btn" onclick="editAppointment(${a.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
     `,
     emptyTitle: 'نوبتی مطابق این فیلتر پیدا نشد',
     emptyHint: 'با دکمه «افزودن نوبت» بالای صفحه یک نوبت جدید بسازید.'

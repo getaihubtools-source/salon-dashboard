@@ -37,7 +37,7 @@ function loadEmployeeProfile() {
   const apptCount = query('appointments', a => a.employeeId === id && isDateInRange(a.date, 'month') && a.status === 'completed').length;
 
   document.getElementById('kpiSlot').innerHTML = [
-    renderKpiCard({ title: 'درآمد این ماه', value: formatCurrency(monthRevenue) }),
+    renderKpiCard({ title: 'درآمد این ماه', value: formatCurrency(monthRevenue), size: 'primary' }),
     renderKpiCard({ title: 'سهم همکار این ماه', value: formatCurrency(monthCommission), variant: 'gold' }),
     renderKpiCard({ title: 'نوبت‌های انجام‌شده این ماه', value: apptCount })
   ].join('');

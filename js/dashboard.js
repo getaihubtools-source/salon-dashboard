@@ -8,6 +8,7 @@ function renderDashboardPage() {
   recalcLoyaltyTiers(); // طبق فازبندی: تضمین رده صحیح مشتریان هنگام لود داشبورد
 
   document.getElementById('sidebarSlot').innerHTML = renderSidebar('dashboard');
+  renderDashHeader();
   loadDashboardKPIs();
   renderTodayAppointmentsWidget();
   window._onApptChange = () => { renderTodayAppointmentsWidget(); loadDashboardKPIs(); };
@@ -15,8 +16,36 @@ function renderDashboardPage() {
   renderTopEmployeeChart();
   renderLoyaltyDistributionChart();
   renderExpenseBreakdownChart();
-  renderBackupReminder();
   _checkBackupReminder();
+}
+
+/* --------------------------------------------------------------------
+   هدر حرفه‌ای داشبورد — اسم سالن، تاریخ امروز، دکمه تنظیمات و دکمه پشتیبان‌گیری
+   تنها جایی که دکمه «تهیه نسخه پشتیبان» در کل برنامه نمایش داده می‌شود
+   -------------------------------------------------------------------- */
+function _todayJalaliLong() {
+  const p = parseJalaliParts(todayJalali());
+  return `${p.jd} ${JALALI_MONTH_NAMES[p.jm - 1]} ${p.jy}`;
+}
+
+function renderDashHeader() {
+  const el = document.getElementById('dashHeaderSlot');
+  if (!el) return;
+  const salonName = (getSettings().salon && getSettings().salon.name) || 'سالن زیبایی من';
+
+  el.innerHTML = `
+    <div class="dash-header__brand">
+      <div class="dash-header__salon">${salonName}</div>
+      <div class="dash-header__date">${_todayJalaliLong()} · دید کلی مالی و عملکردی سالن در یک نگاه</div>
+    </div>
+    <div class="dash-header__actions">
+      <a class="icon-btn" href="settings.html" title="تنظیمات">${_navIconSvg('settings', 18)}</a>
+      <div class="dash-header__backup">
+        <button class="btn btn-primary" onclick="_backupFromDashboard()">${_actionIconSvg('backup')} تهیه نسخه پشتیبان</button>
+        <div id="backupReminderSlot"></div>
+      </div>
+    </div>`;
+  renderBackupReminder();
 }
 
 /* --------------------------------------------------------------------
@@ -68,10 +97,10 @@ function loadDashboardKPIs() {
 
   document.getElementById('kpiSlot').innerHTML = [
     renderKpiCard({ title: 'درآمد امروز', value: formatCurrency(todayRevenue) }),
-    renderKpiCard({ title: 'درآمد این ماه', value: formatCurrency(monthRevenue), variant: 'positive' }),
+    renderKpiCard({ title: 'درآمد این ماه', value: formatCurrency(monthRevenue), variant: 'positive', size: 'primary' }),
     renderKpiCard({ title: 'پورسانت تیم این ماه', value: formatCurrency(monthCommission) }),
     renderKpiCard({ title: 'هزینه این ماه', value: formatCurrency(monthExpense), variant: 'negative' }),
-    renderKpiCard({ title: 'سود واقعی این ماه', value: formatCurrency(realProfit), variant: realProfit >= 0 ? 'positive' : 'negative' }),
+    renderKpiCard({ title: 'سود واقعی این ماه', value: formatCurrency(realProfit), variant: realProfit >= 0 ? 'positive' : 'negative', size: 'primary' }),
     renderKpiCard({ title: 'تعداد کل مشتریان', value: customerCount }),
     renderKpiCard({ title: 'نوبت‌های امروز', value: todayAppointments, variant: 'gold' })
   ].join('');
@@ -182,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
    نوبت‌های امروز — فقط چند مورد مهم + دسترسی سریع (Phase 3)
    -------------------------------------------------------------------- */
 const DASHBOARD_APPT_LIMIT = 5;
+let _dashboardApptPage = 1;
 
 function renderTodayAppointmentsWidget() {
   const el = document.getElementById('todayApptSlot');
@@ -194,12 +224,18 @@ function renderTodayAppointmentsWidget() {
     .sort((a, b) => a.time.localeCompare(b.time));
   const open = all.filter(a => a.status === 'pending' || a.status === 'confirmed');
   const done = all.filter(a => a.status === 'completed');
-  const shown = [...open, ...done].slice(0, DASHBOARD_APPT_LIMIT);
+  const ordered = [...open, ...done];
 
-  if (shown.length === 0) {
+  if (ordered.length === 0) {
     el.innerHTML = `<div class="table-empty" style="padding:24px;"><div class="table-empty__title">امروز نوبت فعالی ثبت نشده</div></div>`;
     return;
   }
+
+  const totalPages = Math.ceil(ordered.length / DASHBOARD_APPT_LIMIT);
+  if (_dashboardApptPage > totalPages) _dashboardApptPage = totalPages;
+  if (_dashboardApptPage < 1) _dashboardApptPage = 1;
+  const start = (_dashboardApptPage - 1) * DASHBOARD_APPT_LIMIT;
+  const shown = ordered.slice(start, start + DASHBOARD_APPT_LIMIT);
 
   const rows = shown.map(a => {
     const c = customers.find(x => x.id === a.customerId);
@@ -225,6 +261,16 @@ function renderTodayAppointmentsWidget() {
       </div>`;
   }).join('');
 
-  const more = all.length > shown.length ? `<div style="color:var(--text-secondary);font-size:var(--fs-small);padding-top:8px;">و ${all.length - shown.length} نوبت دیگر…</div>` : '';
-  el.innerHTML = rows + more;
+  const pager = totalPages > 1 ? `
+    <div class="table-pager">
+      <button class="btn btn-ghost" ${_dashboardApptPage <= 1 ? 'disabled' : ''} onclick="_changeDashboardApptPage(${_dashboardApptPage - 1})">‹ قبلی</button>
+      <span>صفحه ${_dashboardApptPage} از ${totalPages} (${ordered.length} مورد)</span>
+      <button class="btn btn-ghost" ${_dashboardApptPage >= totalPages ? 'disabled' : ''} onclick="_changeDashboardApptPage(${_dashboardApptPage + 1})">بعدی ›</button>
+    </div>` : '';
+  el.innerHTML = rows + pager;
+}
+
+function _changeDashboardApptPage(page) {
+  _dashboardApptPage = page;
+  renderTodayAppointmentsWidget();
 }

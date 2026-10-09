@@ -44,11 +44,31 @@ function _openDatePicker(inputEl) {
 
   const el = _ensureDatePickerEl();
   _renderDatePickerBody();
-
-  const rect = inputEl.getBoundingClientRect();
-  el.style.top = (window.scrollY + rect.bottom + 6) + 'px';
-  el.style.right = (window.innerWidth - rect.right) + 'px';
   el.classList.add('is-open');
+  _positionDatePicker(inputEl, el);
+}
+
+/** موقعیت‌دهی پاپ‌آپ طوری که همیشه کامل داخل صفحه بماند (position: fixed نسبت به viewport)
+ *  و در موبایل هیچ‌وقت از لبه‌ها بیرون نزند — ریشه‌ی اصلی مشکل «نشدن پیمایش ماه» در گوشی. */
+function _positionDatePicker(inputEl, el) {
+  const rect = inputEl.getBoundingClientRect();
+  const margin = 10;
+  const popupW = el.offsetWidth || 280;
+  const popupH = el.offsetHeight || 320;
+
+  let top = rect.bottom + 6;
+  if (top + popupH > window.innerHeight - margin) {
+    top = rect.top - popupH - 6; // اگر پایین جا نشد، بالای فیلد باز شود
+    if (top < margin) top = Math.max(margin, window.innerHeight - popupH - margin);
+  }
+
+  // right = فاصله از لبه راست صفحه (چون RTL هستیم، پاپ‌آپ زیر فیلد و هم‌راستا با لبه راست آن باز می‌شود)
+  let right = window.innerWidth - rect.right;
+  if (right + popupW > window.innerWidth - margin) right = window.innerWidth - popupW - margin;
+  if (right < margin) right = margin;
+
+  el.style.top = top + 'px';
+  el.style.right = right + 'px';
 }
 
 function _renderDatePickerBody() {
@@ -87,6 +107,9 @@ function _shiftDatePickerMonth(delta) {
   const { jy, jm } = shiftJalaliMonth(_dpViewYear, _dpViewMonth, delta);
   _dpViewYear = jy; _dpViewMonth = jm;
   _renderDatePickerBody();
+  // تعداد هفته‌های ماه فرق می‌کند (۴ تا ۶ هفته) پس ارتفاع پاپ‌آپ عوض می‌شود؛
+  // دوباره جای آن را تنظیم کن تا هیچ‌وقت از صفحه بیرون نزند
+  if (_activeDateInput) _positionDatePicker(_activeDateInput, document.getElementById('jalaliDatePickerPopup'));
 }
 
 function _pickDate(jy, jm, jd) {
