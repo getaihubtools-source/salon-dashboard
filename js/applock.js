@@ -338,7 +338,11 @@ function _showLockScreen() {
       <h2 class="license-gate__title">برنامه قفل است</h2>
       <p class="license-gate__desc">برای ادامه، رمز عبور را وارد کنید${hasBiometric ? ' یا از ورود بیومتریک استفاده کنید' : ''}.</p>
 
-      ${hasBiometric ? `<button class="btn btn-ghost" id="appLockBiometricBtn" style="width:100%;justify-content:center;margin-bottom:10px;">ورود با بیومتریک</button>` : ''}
+      ${hasBiometric ? `
+      <div class="app-lock__biometric-row">
+        <button class="app-lock__biometric-btn" id="appLockBiometricBtn" title="ورود با بیومتریک" aria-label="ورود با بیومتریک">${_actionIconSvg('fingerprint', 26)}</button>
+        <span class="app-lock__biometric-label">ورود با بیومتریک</span>
+      </div>` : ''}
 
       <div class="form-field">
         <label>رمز عبور</label>

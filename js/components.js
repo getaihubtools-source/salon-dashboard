@@ -29,7 +29,8 @@ const ACTION_ICONS = {
   refund: '<path d="M4.5 10h9.5a5 5 0 1 1 0 10h-2.3"/><path d="M8 6 4.5 10 8 14"/>',
   deposit: '<rect x="3" y="7" width="18" height="11" rx="2.2"/><circle cx="12" cy="12.5" r="2.3"/>',
   warning: '<path d="M12 3.8 2.3 20.5h19.4Z"/><path d="M12 9.8v4.3"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/>',
-  backup: '<path d="M12 4v11"/><path d="M7.3 10.7 12 15.3l4.7-4.6"/><path d="M5 19.3h14"/>'
+  backup: '<path d="M12 4v11"/><path d="M7.3 10.7 12 15.3l4.7-4.6"/><path d="M5 19.3h14"/>',
+  fingerprint: '<path d="M12 4.5a6.5 6.5 0 0 1 6.5 6.5c0 1.8-.3 3.4-.9 4.9"/><path d="M12 4.5a6.5 6.5 0 0 0-6.5 6.5c0 2.3.5 4.3 1.4 6"/><path d="M12 7.8a3.2 3.2 0 0 1 3.2 3.2c0 2.6-.6 4.9-1.7 6.8"/><path d="M12 7.8a3.2 3.2 0 0 0-3.2 3.2c0 1.6.2 3.1.6 4.4"/><path d="M12 11c.6 0 1 .4 1 1 0 2.9-.9 5.5-2.4 7.7"/>'
 };
 
 function _actionIconSvg(key, size = 16) {
@@ -393,10 +394,27 @@ function showToast(message, type = 'default') {
 }
 
 /* --------------------------------------------------------------------
-   دیالوگ تأیید (ساده — از confirm بومی مرورگر استفاده می‌کند)
+   دیالوگ تأیید — مودال اختصاصی هم‌تم برنامه (نه confirm() بومی مرورگر، که
+   آدرس سایت را روی زمینه سفید نشان می‌داد و ظاهر حرفه‌ای نداشت)
    -------------------------------------------------------------------- */
-function confirmAction(message, onConfirm) {
-  if (window.confirm(message)) onConfirm();
+function confirmAction(message, onConfirm, options) {
+  const opts = options || {};
+  const confirmLabel = opts.confirmLabel || 'تأیید';
+  const cancelLabel = opts.cancelLabel || 'انصراف';
+  const danger = opts.danger !== false; // اکثر استفاده‌ها حذف/عملیات حساس‌اند؛ پیش‌فرض قرمز
+
+  openModal(`
+    <h2>تأیید عملیات</h2>
+    <p style="color:var(--text-secondary);line-height:1.9;margin:0 0 var(--space-3);">${message}</p>
+    <div class="modal-actions">
+      <button class="btn ${danger ? 'btn-danger' : 'btn-primary'}" id="confirmActionYesBtn">${confirmLabel}</button>
+      <button class="btn btn-ghost" onclick="closeModal()">${cancelLabel}</button>
+    </div>
+  `);
+  document.getElementById('confirmActionYesBtn').addEventListener('click', () => {
+    closeModal();
+    onConfirm();
+  });
 }
 
 /* --------------------------------------------------------------------

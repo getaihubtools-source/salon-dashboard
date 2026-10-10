@@ -25,12 +25,16 @@ function _ensureDatePickerEl() {
     el.id = 'jalaliDatePickerPopup';
     el.className = 'jdp-popup';
     document.body.appendChild(el);
+    // فاز capture (نه bubble): چون کلیک روی دکمه‌ی «ماه بعد/قبل» بلافاصله innerHTML پاپ‌آپ
+    // را با رندر جدید جایگزین می‌کند، در فاز bubble دیگر دکمه‌ی اصلی داخل el نیست و این
+    // تابع اشتباهاً آن را «کلیک بیرون از پاپ‌آپ» تشخیص داده و فوراً می‌بست. در فاز capture
+    // بررسی contains() قبل از اجرای onclick همان دکمه انجام می‌شود، یعنی قبل از جایگزینی DOM.
     document.addEventListener('click', (e) => {
       if (_activeDateInput && !el.contains(e.target) && e.target !== _activeDateInput) {
         el.classList.remove('is-open');
         _activeDateInput = null;
       }
-    });
+    }, true);
   }
   return el;
 }

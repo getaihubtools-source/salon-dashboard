@@ -36,14 +36,15 @@ function renderDashHeader() {
   el.innerHTML = `
     <div class="dash-header__brand">
       <div class="dash-header__salon">${salonName}</div>
-      <div class="dash-header__date">${_todayJalaliLong()} · دید کلی مالی و عملکردی سالن در یک نگاه</div>
+      <div class="dash-header__date">${_todayJalaliLong()}</div>
+      <div class="dash-header__subtitle">دید کلی مالی و عملکردی سالن در یک نگاه</div>
     </div>
     <div class="dash-header__actions">
-      <a class="icon-btn" href="settings.html" title="تنظیمات">${_navIconSvg('settings', 18)}</a>
-      <div class="dash-header__backup">
-        <button class="btn btn-primary" onclick="_backupFromDashboard()">${_actionIconSvg('backup')} تهیه نسخه پشتیبان</button>
-        <div id="backupReminderSlot"></div>
+      <div class="dash-header__icon-row">
+        <a class="icon-btn" href="settings.html" title="تنظیمات">${_navIconSvg('settings', 18)}</a>
+        <button class="btn btn-primary dash-header__backup-btn" onclick="_backupFromDashboard()" title="تهیه نسخه پشتیبان">${_actionIconSvg('backup')}<span class="dash-header__backup-label">تهیه نسخه پشتیبان</span></button>
       </div>
+      <div id="backupReminderSlot" class="dash-header__reminder"></div>
     </div>`;
   renderBackupReminder();
 }
