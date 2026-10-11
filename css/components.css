@@ -65,8 +65,7 @@
   line-height: 1.25;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
+  display: flex; align-items: baseline; gap: 5px;
 }
 /* کارت KPI اصلی/هدلاین — عدد به‌وضوح بزرگ‌تر (طبق سیستم طراحی)، تاکید بصری ملایم با نوار کناری طلایی */
 .kpi-card--primary {
@@ -94,14 +93,28 @@
 @media (max-width: 900px) {
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 480px) {
-  /* در موبایل خیلی باریک، عدد اصلی حتی در ۲ ستون کامل جا نمی‌شود و با «...» بریده می‌شد؛
-     تک‌ستونه کردن کارت‌ها + کمی کوچک‌تر کردن فونت عدد (نه حذف تاکید، فقط رفع بریدگی) حل می‌کند */
-  .kpi-grid { grid-template-columns: 1fr; }
-  :root {
-    --fs-kpi-primary: 22px;
-    --fs-kpi-secondary: 17px;
+
+/* --------------------------------------------------------------------
+   موبایل: شبکه‌ی ۲ ستونه‌ی فشرده
+   - کارت‌های اصلی (Primary) بالا و تمام‌عرض به‌صورت «کارت هدلاین»
+   - بقیه دو‌تایی کنار هم؛ اگر تعدادشان فرد بود آخری تمام‌عرض می‌شود (کلاس kpi-card--wide از JS)
+   - عدد بزرگ و پررنگ، «ریال» کوچک و کم‌رنگ کنارش؛ اگر عدد جا نشد، فونتش خودکار
+     کوچک می‌شود (fitKpiValues در components.js) — نه بریده‌شدن با «...»
+   -------------------------------------------------------------------- */
+@media (max-width: 600px) {
+  .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: var(--space-3); }
+  .kpi-card { padding: 12px; border-radius: 12px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; }
+  .kpi-card--primary {
+    grid-column: 1 / -1; order: -1; padding: 14px 16px;
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
   }
+  .kpi-card--wide { grid-column: 1 / -1; }
+  .kpi-card__title { font-size: 12px; font-weight: 500; margin-bottom: 0; }
+  .kpi-card--primary .kpi-card__title { font-size: 13px; font-weight: 600; }
+  .kpi-card__value { line-height: 1.2; }
+  .kpi-card__num { font-size: 18px; font-variant-numeric: tabular-nums; }
+  .kpi-card--primary .kpi-card__num { font-size: 28px; }
+  .kpi-card__unit { margin: 0; font-size: 10.5px; }
 }
 
 /* --- بج رده وفاداری --- */
@@ -395,7 +408,8 @@
    (طبق درخواست کاربر: «حرفه‌ای و شیک»، هم‌خانواده با سایر آیکون‌های خطی برنامه) */
 .app-lock__biometric-row { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-bottom: 20px; }
 .app-lock__biometric-btn {
-  width: 64px; height: 64px; border-radius: 50%;
+  position: relative; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+  width: 76px; height: 76px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   background: var(--accent-gold-dim); border: 1.5px solid var(--accent-gold);
   color: var(--accent-gold); cursor: pointer;
@@ -405,3 +419,49 @@
 .app-lock__biometric-btn:active { transform: scale(0.94); }
 .app-lock__biometric-btn:disabled { opacity: .6; cursor: default; transform: none; }
 .app-lock__biometric-label { color: var(--text-secondary); font-size: var(--fs-small); }
+
+/* --------------------------------------------------------------------
+   Custom Select — دکمه + پنل تم‌دار (جایگزین لیست بومی سیستم‌عامل)
+   -------------------------------------------------------------------- */
+.csel { position: relative; display: block; width: 100%; }
+.csel--filter { flex: 0 0 200px; width: auto; }
+.csel--compact { display: inline-block; width: auto; min-width: 96px; }
+.csel__native { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
+.csel__trigger {
+  width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: var(--bg-primary); color: var(--text-primary);
+  border: 1px solid var(--border-soft); border-radius: 8px;
+  padding: 10px 12px; font: inherit; text-align: start; cursor: pointer;
+}
+.csel--filter .csel__trigger { background: var(--bg-card); border-radius: var(--radius-btn); padding: 10px 14px; }
+.csel--compact .csel__trigger { padding: 4px 8px; font-size: var(--fs-small); }
+.csel__trigger:focus-visible, .csel__trigger[aria-expanded="true"] { outline: none; border-color: var(--accent-gold); }
+.csel__trigger:disabled { opacity: .5; cursor: not-allowed; }
+.csel__text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.csel__arrow { display: inline-flex; color: var(--text-secondary); }
+.csel__trigger[aria-expanded="true"] .csel__arrow { transform: rotate(180deg); color: var(--accent-gold); }
+.csel-panel {
+  position: fixed; z-index: 5000; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--bg-card); border: 1px solid var(--border-hover); border-radius: 10px;
+  box-shadow: var(--shadow-card); padding: 4px; direction: rtl;
+}
+.csel-item {
+  padding: 10px 12px; border-radius: 7px; cursor: pointer; font-size: var(--fs-base);
+  color: var(--text-primary);
+}
+.csel-item:hover { background: var(--bg-secondary); }
+.csel-item.is-selected { background: var(--accent-gold-dim); color: var(--accent-gold); font-weight: 600; }
+.csel-item.is-disabled { color: var(--text-muted); cursor: default; }
+
+/* حلقه‌ی پیشرفت نگه‌داشتن انگشت روی آیکون قفل */
+.app-lock__ring { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); pointer-events: none; }
+.app-lock__ring circle {
+  fill: none; stroke: var(--accent-gold); stroke-width: 3; stroke-linecap: round;
+  stroke-dasharray: 220; stroke-dashoffset: 220; transition: stroke-dashoffset .2s ease;
+}
+.app-lock__biometric-btn.is-holding { transform: scale(0.96); background: var(--accent-gold-dim); color: var(--accent-gold); }
+.app-lock__biometric-btn.is-holding .app-lock__ring circle { stroke-dashoffset: 0; transition: stroke-dashoffset 1.2s linear; }
+.app-lock__alt { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border-soft); }
+.app-lock__alt-title { text-align: center; color: var(--text-secondary); font-size: var(--fs-small); margin-bottom: 10px; }
+.app-lock__reqrow { display: flex; gap: 8px; align-items: stretch; }
+.app-lock__reqrow input { flex: 1; min-width: 0; }

@@ -191,6 +191,7 @@ function renderAppointmentsList() {
     rowActions: (a) => `
       ${(a.depositAmount > 0 && !a.depositPaid) ? `<button class="icon-btn" onclick="recordDepositPayment(${a.id})" title="ثبت دریافت بیعانه">${_actionIconSvg('deposit')}</button>` : ''}
       <button class="icon-btn" onclick="editAppointment(${a.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
+      <button class="icon-btn danger" onclick="deleteAppointment(${a.id})" title="حذف">${_actionIconSvg('delete')}</button>
     `,
     emptyTitle: 'نوبتی مطابق این فیلتر پیدا نشد',
     emptyHint: 'با دکمه «افزودن نوبت» بالای صفحه یک نوبت جدید بسازید.'
@@ -370,6 +371,20 @@ function _afterOpenAppointmentModal() {
 function addAppointment() {
   openModal(_appointmentFormHtml(null));
   _afterOpenAppointmentModal();
+}
+
+function deleteAppointment(id) {
+  const a = getById('appointments', id);
+  if (!a) return;
+  const cust = getById('customers', a.customerId);
+  const note = a.depositPaid ? ' تراکنش بیعانه‌ی ثبت‌شده در درآمدها باقی می‌ماند.' : '';
+  confirmAction(`نوبت ${cust ? '«' + cust.name + '» ' : ''}در تاریخ ${a.date} ساعت ${a.time} حذف شود؟ این عملیات قابل بازگشت نیست.${note}`, () => {
+    remove('appointments', id);
+    showToast('نوبت حذف شد', 'success');
+    renderAppointmentKpis();
+    renderTodayReminders();
+    renderAppointmentsList();
+  });
 }
 
 function editAppointment(id) {

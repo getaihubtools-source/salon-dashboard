@@ -104,14 +104,15 @@
   .dash-header { flex-direction: column; align-items: stretch; }
   .dash-header__subtitle { display: none; } /* روی موبایل همین کارت‌های KPI زیرش خودشون "دید کلی" رو نشون می‌دن، تکرار متن لازم نیست */
   .dash-header__actions { align-items: stretch; }
-  .dash-header__icon-row { justify-content: flex-start; }
-  /* دکمه بکاپ هم‌اندازه آیکون تنظیمات می‌شود — فقط آیکون، بدون متن طولانی کنارش؛
+  /* دکمه بکاپ روی موبایل: دکمه‌ی کامل با آیکون + متن کوتاه، کنار آیکون تنظیمات؛
      یادآوری تاریخ آخرین بکاپ زیرش کامل باقی می‌ماند (طبق درخواست قبلی حذف نشود) */
+  .dash-header__icon-row { gap: var(--space-2); }
   .dash-header__backup-btn {
-    width: var(--touch-target); height: var(--touch-target); padding: 0;
-    justify-content: center; border-radius: 50%;
+    flex: 1; height: var(--touch-target); padding: 0 14px;
+    justify-content: center; border-radius: var(--radius-btn);
+    font-size: var(--fs-base); white-space: nowrap;
   }
-  .dash-header__backup-label { display: none; }
+  .dash-header__icon-row .icon-btn { flex: 0 0 var(--touch-target); height: var(--touch-target); }
   .dash-header__reminder { text-align: start; margin-top: 4px; }
 }
 

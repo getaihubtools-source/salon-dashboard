@@ -188,6 +188,73 @@ async function resetPinWithRecovery(code, newPin) {
   return setupPin(newPin);
 }
 
+/* --------------------------------------------------------------------
+   بازیابی با کد پشتیبانی (وقتی کد بازیابی در دسترس نیست)
+   ‏چالش–پاسخ آفلاین با امضای ECDSA P-256: برنامه فقط «کلید عمومی» را دارد و
+   فقط می‌تواند امضا را بررسی کند؛ کلید خصوصی نزد پشتیبان (فروشنده) می‌ماند و
+   در هیچ فایلی که به مشتری می‌رسد وجود ندارد، پس مشتری نمی‌تواند خودش کد بسازد.
+   ‏هر درخواست یک nonce تازه دارد و بعد از استفاده/درخواست جدید باطل می‌شود.
+   -------------------------------------------------------------------- */
+const APP_LOCK_SUPPORT_PUBKEY = {"kty": "EC", "x": "a3nJ-vSQ6ioXxRfD67af6Tlm47Co1YaL6KIxUJojvOg", "y": "8Fa2o3j3aEuBDUW8FkdUFxO5qayjmrFsbbk4IIAIXKU", "crv": "P-256"};
+const APP_LOCK_PENDING_KEY = 'app_lock_reset_pending';
+const APP_LOCK_RESET_PREFIX = 'MODIRYAR-LOCK-RESET|';
+
+function _b64urlToBytes(str) {
+  const b64 = str.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((str.length + 3) % 4);
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+  return out;
+}
+
+/** کد درخواست ۱۶ نویسه‌ای: ۸ نویسه شناسه دستگاه + ۸ نویسه تصادفی (فرمت XXXX-XXXX-XXXX-XXXX) */
+function createLockResetRequest() {
+  const deviceId = (typeof _getOrCreateDeviceId === 'function' ? _getOrCreateDeviceId() : (localStorage.getItem('device_id') || 'nodevice'));
+  const dev = deviceId.replace(/[^a-zA-Z0-9]/g, '').slice(0, 8).toUpperCase().padEnd(8, '0');
+  const nonce = _randomHex(4).toUpperCase();
+  const raw = dev + nonce;
+  localStorage.setItem(APP_LOCK_PENDING_KEY, raw);
+  return raw.match(/.{4}/g).join('-');
+}
+
+function getPendingLockResetRequest() {
+  const raw = localStorage.getItem(APP_LOCK_PENDING_KEY);
+  return raw ? raw.match(/.{4}/g).join('-') : null;
+}
+
+async function resetLockWithSupportCode(responseCode) {
+  const cfg = getAppLockConfig();
+  const lockInfo = _lockoutStatus(cfg);
+  if (lockInfo.locked) return { ok: false, lockedOut: true, message: `${lockInfo.secondsLeft} ثانیه صبر کنید` };
+  const pending = localStorage.getItem(APP_LOCK_PENDING_KEY);
+  if (!pending) return { ok: false, message: 'ابتدا «کد درخواست» بسازید و برای پشتیبانی بفرستید' };
+
+  let valid = false;
+  try {
+    const sigBytes = _b64urlToBytes((responseCode || '').replace(/\s+/g, ''));
+    const key = await crypto.subtle.importKey('jwk', APP_LOCK_SUPPORT_PUBKEY, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['verify']);
+    valid = await crypto.subtle.verify({ name: 'ECDSA', hash: 'SHA-256' }, key, sigBytes, new TextEncoder().encode(APP_LOCK_RESET_PREFIX + pending));
+  } catch (e) { valid = false; }
+
+  if (!valid) {
+    cfg.failedAttempts = (cfg.failedAttempts || 0) + 1;
+    if (cfg.failedAttempts >= 5) cfg.lockoutUntil = new Date(Date.now() + 30000).toISOString();
+    _saveAppLockConfig(cfg);
+    return { ok: false, message: 'کد پشتیبانی نادرست است یا مربوط به این درخواست نیست' };
+  }
+  localStorage.removeItem(APP_LOCK_PENDING_KEY);
+  _saveAppLockConfig(_defaultAppLockConfig()); // قفل و بیومتریک‌ها حذف می‌شوند؛ داده‌های سالن دست‌نخورده می‌مانند
+  return { ok: true };
+}
+
+/** آخرین راه: پاک‌کردن اطلاعات برنامه + قفل (لایسنس حفظ می‌شود تا بتوان بکاپ را بازگرداند) */
+function wipeAppDataAndLock() {
+  try { localStorage.removeItem(typeof DB_KEY !== 'undefined' ? DB_KEY : 'beautySalonDB'); } catch (e) {}
+  localStorage.removeItem(APP_LOCK_PENDING_KEY);
+  _saveAppLockConfig(_defaultAppLockConfig());
+  sessionStorage.removeItem(APP_LOCK_SESSION_KEY);
+}
+
 function setAutoLockMinutes(minutes) {
   const cfg = getAppLockConfig();
   cfg.autoLockMinutes = Number(minutes) || 0;
@@ -340,8 +407,11 @@ function _showLockScreen() {
 
       ${hasBiometric ? `
       <div class="app-lock__biometric-row">
-        <button class="app-lock__biometric-btn" id="appLockBiometricBtn" title="ورود با بیومتریک" aria-label="ورود با بیومتریک">${_actionIconSvg('fingerprint', 26)}</button>
-        <span class="app-lock__biometric-label">ورود با بیومتریک</span>
+        <button class="app-lock__biometric-btn" id="appLockBiometricBtn" title="ورود با اثر انگشت" aria-label="ورود با اثر انگشت">
+          <svg class="app-lock__ring" viewBox="0 0 76 76" aria-hidden="true"><circle cx="38" cy="38" r="35"/></svg>
+          ${_actionIconSvg('fingerprint', 30)}
+        </button>
+        <span class="app-lock__biometric-label" id="appLockBiometricLabel">انگشت را روی آیکون نگه دارید</span>
       </div>` : ''}
 
       <div class="form-field">
@@ -386,13 +456,49 @@ function _wireLockScreenHandlers(overlay) {
 
   const biometricBtn = overlay.querySelector('#appLockBiometricBtn');
   if (biometricBtn) {
-    biometricBtn.addEventListener('click', async () => {
-      biometricBtn.disabled = true;
+    const label = overlay.querySelector('#appLockBiometricLabel');
+    const HOLD_MS = 1200;
+    let holdTimer = null, swallowClick = false, busy = false;
+
+    const runBiometric = async (silent) => {
+      if (busy) return;
+      busy = true; biometricBtn.disabled = true;
+      label.textContent = 'در حال تأیید اثر انگشت…';
       const res = await verifyBiometric();
-      biometricBtn.disabled = false;
+      busy = false; biometricBtn.disabled = false;
+      label.textContent = 'انگشت را روی آیکون نگه دارید';
       if (res.ok) { _unlock(); }
-      else { showMsg(res.message || 'ورود بیومتریک ناموفق بود', 'error'); }
+      else if (!silent) { showMsg(res.message || 'ورود بیومتریک ناموفق بود', 'error'); }
+    };
+    const cancelHold = () => {
+      clearTimeout(holdTimer); holdTimer = null;
+      biometricBtn.classList.remove('is-holding');
+    };
+
+    // نگه‌داشتن انگشت: حلقه‌ی پیشرفت پر می‌شود و بعد خودکار تأیید شروع می‌شود
+    biometricBtn.addEventListener('pointerdown', (e) => {
+      if (busy || e.button > 0) return;
+      swallowClick = false;
+      biometricBtn.classList.add('is-holding');
+      holdTimer = setTimeout(() => {
+        holdTimer = null;
+        biometricBtn.classList.remove('is-holding');
+        swallowClick = true; // کلیکی که با رها کردن انگشت می‌آید نباید دوباره اجرا شود
+        if (navigator.vibrate) navigator.vibrate(25);
+        runBiometric(false);
+      }, HOLD_MS);
     });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => biometricBtn.addEventListener(ev, cancelHold));
+    biometricBtn.addEventListener('contextmenu', e => e.preventDefault()); // جلوگیری از منوی نگه‌داشتن طولانی اندروید
+
+    // ضربه‌ی سریع / صفحه‌کلید هم مثل قبل کار می‌کند
+    biometricBtn.addEventListener('click', () => {
+      if (swallowClick) { swallowClick = false; return; }
+      runBiometric(false);
+    });
+
+    // بار اول که صفحه قفل باز می‌شود، پنجره‌ی اثر انگشت خودش بالا بیاید (اگر مرورگر اجازه نداد، بی‌صدا رد می‌شود)
+    setTimeout(() => { if (document.body.contains(biometricBtn)) runBiometric(true); }, 350);
   }
 
   const forgotLink = overlay.querySelector('#appLockForgotLink');
@@ -411,6 +517,11 @@ function _showRecoveryFlow(overlay) {
     <div class="form-field"><label>تکرار رمز جدید</label><input id="recNewPin2" type="password" autocomplete="off" /></div>
     <button class="btn btn-primary" id="recSubmitBtn" style="width:100%;justify-content:center;">تنظیم رمز جدید</button>
     <div id="appLockMessage" class="license-gate__message" style="display:none;"></div>
+    <div class="app-lock__alt">
+      <div class="app-lock__alt-title">کد بازیابی ندارید؟</div>
+      <button class="btn btn-ghost" id="recSupportBtn" style="width:100%;justify-content:center;">دریافت کد از پشتیبانی</button>
+      <button class="btn btn-ghost" id="recWipeBtn" style="width:100%;justify-content:center;margin-top:8px;">پاک‌کردن اطلاعات و شروع دوباره</button>
+    </div>
     <div style="text-align:center;margin-top:14px;"><a href="#" id="appLockBackLink" style="color:var(--text-secondary);font-size:var(--fs-small);">بازگشت به ورود با رمز</a></div>
   `;
   const msgEl = overlay.querySelector('#appLockMessage');
@@ -432,10 +543,84 @@ function _showRecoveryFlow(overlay) {
     showToast('رمز جدید تنظیم شد — کد بازیابی جدید را از تنظیمات یادداشت کنید', 'success');
   });
 
+  overlay.querySelector('#recSupportBtn').addEventListener('click', () => _showSupportResetFlow(overlay));
+  overlay.querySelector('#recWipeBtn').addEventListener('click', () => _showWipeFlow(overlay));
+
   overlay.querySelector('#appLockBackLink').addEventListener('click', (e) => {
     e.preventDefault();
     overlay.remove();
     _showLockScreen();
+  });
+}
+
+function _lockFlowHelpers(overlay) {
+  const msgEl = overlay.querySelector('#appLockMessage');
+  const showMsg = (text, type) => {
+    msgEl.textContent = text;
+    msgEl.className = 'license-gate__message license-gate__message--' + type;
+    msgEl.style.display = 'block';
+  };
+  const back = overlay.querySelector('#appLockBackLink');
+  if (back) back.addEventListener('click', (e) => { e.preventDefault(); overlay.remove(); _showLockScreen(); });
+  return showMsg;
+}
+
+function _showSupportResetFlow(overlay) {
+  const existing = getPendingLockResetRequest();
+  const licenseKey = localStorage.getItem('license_key') || '';
+  overlay.querySelector('.license-gate__card').innerHTML = `
+    <div class="license-gate__brand">مدیریار سالن</div>
+    <h2 class="license-gate__title">بازیابی با پشتیبانی</h2>
+    <p class="license-gate__desc">۱) «کد درخواست» را بسازید و همراه <b>کد لایسنس</b> خود به پشتیبانی (@aihub_tools در تلگرام/روبیکا) بفرستید. ۲) کد پشتیبانی که دریافت کردید را اینجا وارد کنید. اطلاعات سالن شما پاک نمی‌شود؛ فقط قفل برداشته می‌شود.</p>
+    <div class="form-field"><label>کد درخواست شما</label>
+      <div class="app-lock__reqrow"><input id="supReq" type="text" readonly value="${existing || ''}" placeholder="هنوز ساخته نشده" style="direction:ltr;text-align:center;letter-spacing:1px;" />
+      <button class="btn btn-ghost" id="supMakeBtn">${existing ? 'کد جدید' : 'ساخت کد'}</button></div></div>
+    <div class="app-lock__reqrow" style="margin-bottom:12px;">
+      <button class="btn btn-ghost" id="supCopyBtn" style="flex:1;justify-content:center;">کپی پیام برای پشتیبانی</button>
+    </div>
+    <div class="form-field"><label>کد پشتیبانی (دریافتی)</label><textarea id="supResp" rows="3" autocomplete="off" style="direction:ltr;" placeholder="کد را اینجا جای‌گذاری کنید"></textarea></div>
+    <button class="btn btn-primary" id="supSubmitBtn" style="width:100%;justify-content:center;">برداشتن قفل</button>
+    <div id="appLockMessage" class="license-gate__message" style="display:none;"></div>
+    <div style="text-align:center;margin-top:14px;"><a href="#" id="appLockBackLink" style="color:var(--text-secondary);font-size:var(--fs-small);">بازگشت</a></div>
+  `;
+  const showMsg = _lockFlowHelpers(overlay);
+  const reqInput = overlay.querySelector('#supReq');
+  overlay.querySelector('#supMakeBtn').addEventListener('click', () => {
+    reqInput.value = createLockResetRequest();
+    overlay.querySelector('#supMakeBtn').textContent = 'کد جدید';
+    showMsg('کد درخواست ساخته شد. با «کد جدید» دوباره بسازید فقط اگر قبلی را گم کرده‌اید — کد پشتیبانیِ قبلی با ساخت کد جدید باطل می‌شود.', 'success');
+  });
+  overlay.querySelector('#supCopyBtn').addEventListener('click', async () => {
+    if (!reqInput.value) { showMsg('ابتدا «ساخت کد» را بزنید', 'error'); return; }
+    const text = `درخواست بازیابی قفل مدیریار سالن\nکد درخواست: ${reqInput.value}\nکد لایسنس: ${licenseKey || '(نامشخص)'}`;
+    try { await navigator.clipboard.writeText(text); showMsg('پیام کپی شد؛ برای پشتیبانی بفرستید', 'success'); }
+    catch (e) { showMsg('کپی خودکار ممکن نشد؛ کد درخواست و لایسنس را دستی بفرستید', 'error'); }
+  });
+  overlay.querySelector('#supSubmitBtn').addEventListener('click', async () => {
+    const code = overlay.querySelector('#supResp').value.trim();
+    if (!code) { showMsg('کد پشتیبانی را وارد کنید', 'error'); return; }
+    const res = await resetLockWithSupportCode(code);
+    if (!res.ok) { showMsg(res.message, 'error'); return; }
+    _unlock();
+    showToast('قفل برداشته شد — از تنظیمات یک رمز جدید تعیین کنید', 'success');
+  });
+}
+
+function _showWipeFlow(overlay) {
+  overlay.querySelector('.license-gate__card').innerHTML = `
+    <div class="license-gate__brand">مدیریار سالن</div>
+    <h2 class="license-gate__title">پاک‌کردن اطلاعات و شروع دوباره</h2>
+    <p class="license-gate__desc"><b>هشدار:</b> همه‌ی اطلاعات سالن (مشتریان، نوبت‌ها، درآمد و هزینه) از روی این دستگاه پاک می‌شود و قفل هم برداشته می‌شود. لایسنس شما باقی می‌ماند و می‌توانید بعد از ورود، فایل نسخه پشتیبان را از «تنظیمات» بازگردانی کنید. اگر بکاپ ندارید، بهتر است از راه پشتیبانی استفاده کنید.</p>
+    <div class="form-field"><label>برای تأیید، کلمه‌ی «حذف» را بنویسید</label><input id="wipeConfirm" type="text" autocomplete="off" /></div>
+    <button class="btn btn-danger" id="wipeBtn" style="width:100%;justify-content:center;">پاک‌کردن همه‌چیز</button>
+    <div id="appLockMessage" class="license-gate__message" style="display:none;"></div>
+    <div style="text-align:center;margin-top:14px;"><a href="#" id="appLockBackLink" style="color:var(--text-secondary);font-size:var(--fs-small);">بازگشت</a></div>
+  `;
+  const showMsg = _lockFlowHelpers(overlay);
+  overlay.querySelector('#wipeBtn').addEventListener('click', () => {
+    if (overlay.querySelector('#wipeConfirm').value.trim() !== 'حذف') { showMsg('برای ادامه باید دقیقاً «حذف» را بنویسید', 'error'); return; }
+    wipeAppDataAndLock();
+    location.reload();
   });
 }
 

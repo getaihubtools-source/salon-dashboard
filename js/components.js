@@ -124,8 +124,11 @@ function toggleMoreSheet() {
  */
 function renderKpiCard({ title, value, variant, size }) {
   const cls = [size === 'primary' ? 'kpi-card--primary' : '', variant ? `kpi-card--${variant}` : ''].filter(Boolean).join(' ');
-  // واحد «ریال» در انتهای مقدار (در صورت وجود) کوچک و کم‌رنگ‌تر از عدد اصلی نمایش داده شود
-  const displayValue = String(value).replace(/\s?ریال$/, ' <span class="kpi-card__unit">ریال</span>');
+  // عدد و واحد «ریال» جدا می‌شوند تا واحد کوچک و کم‌رنگ و عدد درشت دیده شود
+  const m = String(value).match(/^(.*?)\s?ریال$/);
+  const displayValue = m
+    ? `<span class="kpi-card__num">${m[1]}</span><span class="kpi-card__unit">ریال</span>`
+    : `<span class="kpi-card__num">${value}</span>`;
   return `
     <div class="kpi-card ${cls}">
       <div class="kpi-card__title">${title}</div>
@@ -133,6 +136,43 @@ function renderKpiCard({ title, value, variant, size }) {
     </div>
   `;
 }
+
+/**
+ * چیدمان و تنظیم اندازه‌ی کارت‌های KPI بعد از رندر:
+ * ۱) اگر تعداد کارت‌های غیراصلی فرد بود، آخری تمام‌عرض شود (جای خالی در شبکه‌ی ۲ ستونه نماند)
+ * ۲) اگر عدد در کارت جا نشد، فونتش تا حداقل ۱۲px کوچک شود
+ */
+function fitKpiValues() {
+  document.querySelectorAll('.kpi-grid').forEach(grid => {
+    const cards = Array.from(grid.children).filter(c => c.classList.contains('kpi-card'));
+    const normal = cards.filter(c => !c.classList.contains('kpi-card--primary'));
+    cards.forEach(c => c.classList.remove('kpi-card--wide'));
+    if (normal.length % 2 === 1) normal[normal.length - 1].classList.add('kpi-card--wide');
+  });
+  document.querySelectorAll('.kpi-card__value').forEach(box => {
+    const num = box.querySelector('.kpi-card__num');
+    if (!num) return;
+    num.style.fontSize = '';
+    let size = parseFloat(getComputedStyle(num).fontSize);
+    while (size > 12 && box.scrollWidth > box.clientWidth) {
+      size -= 1;
+      num.style.fontSize = size + 'px';
+    }
+  });
+}
+(function () {
+  let queued = false;
+  const schedule = () => { if (queued) return; queued = true; requestAnimationFrame(() => { queued = false; fitKpiValues(); }); };
+  const start = () => {
+    schedule();
+    new MutationObserver((muts) => {
+      if (muts.some(m => Array.from(m.addedNodes).some(n => n.nodeType === 1 && (n.matches?.('.kpi-card') || n.querySelector?.('.kpi-card'))))) schedule();
+    }).observe(document.body, { childList: true, subtree: true });
+    window.addEventListener('resize', schedule);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
 
 /* --------------------------------------------------------------------
    بج سطح وفاداری
@@ -500,3 +540,153 @@ function renderFilterBar({ containerId, searchPlaceholder, chips, onSearch, onCh
     });
   }
 }
+
+/* ==========================================================================
+   Custom Select (جایگزین لیست بومی <select>)
+   دلیل: لیست بازشونده‌ی <select> در PWA اندروید/موبایل توسط خود سیستم‌عامل رسم می‌شود
+   و با CSS قابل تم‌دادن نیست (پس‌زمینه سفید). اینجا هر <select> با یک دکمه + پنل تم‌دار
+   جایگزین می‌شود، ولی خود <select> در DOM می‌ماند (مخفی) تا همه‌ی کدهای قبلی
+   (.value، onchange، getElementById) بدون هیچ تغییری کار کنند.
+   ========================================================================== */
+(function () {
+  const OPEN = { panel: null, sel: null };
+
+  function _closePanel() {
+    if (OPEN.panel) { OPEN.panel.remove(); }
+    if (OPEN.sel && OPEN.sel._csel) OPEN.sel._csel.trigger.setAttribute('aria-expanded', 'false');
+    OPEN.panel = null; OPEN.sel = null;
+  }
+
+  function _label(sel) {
+    const o = sel.options[sel.selectedIndex];
+    return o ? o.textContent : '';
+  }
+
+  function _refresh(sel) {
+    if (!sel._csel) return;
+    const { trigger, text } = sel._csel;
+    text.textContent = _label(sel) || ' ';
+    trigger.disabled = sel.disabled;
+  }
+
+  function _choose(sel, index) {
+    if (sel.selectedIndex !== index) {
+      sel.selectedIndex = index;
+      sel.dispatchEvent(new Event('input', { bubbles: true }));
+      sel.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    _refresh(sel);
+    _closePanel();
+    sel._csel.trigger.focus();
+  }
+
+  function _openPanel(sel) {
+    if (OPEN.sel === sel) { _closePanel(); return; }
+    _closePanel();
+    const trigger = sel._csel.trigger;
+    const panel = document.createElement('div');
+    panel.className = 'csel-panel';
+    panel.setAttribute('role', 'listbox');
+    Array.from(sel.options).forEach((o, i) => {
+      const item = document.createElement('div');
+      item.className = 'csel-item' + (i === sel.selectedIndex ? ' is-selected' : '') + (o.disabled ? ' is-disabled' : '');
+      item.setAttribute('role', 'option');
+      item.textContent = o.textContent;
+      if (!o.disabled) item.addEventListener('click', (e) => { e.stopPropagation(); _choose(sel, i); });
+      panel.appendChild(item);
+    });
+    document.body.appendChild(panel);
+
+    const r = trigger.getBoundingClientRect();
+    const vh = window.innerHeight;
+    const width = Math.max(r.width, 140);
+    panel.style.width = width + 'px';
+    panel.style.left = Math.max(8, Math.min(r.left, window.innerWidth - width - 8)) + 'px';
+    const spaceBelow = vh - r.bottom - 12;
+    const spaceAbove = r.top - 12;
+    const maxH = 260;
+    if (spaceBelow >= Math.min(maxH, panel.scrollHeight) || spaceBelow >= spaceAbove) {
+      panel.style.top = (r.bottom + 4) + 'px';
+      panel.style.maxHeight = Math.min(maxH, Math.max(spaceBelow, 120)) + 'px';
+    } else {
+      const h = Math.min(maxH, panel.scrollHeight, spaceAbove);
+      panel.style.top = (r.top - h - 4) + 'px';
+      panel.style.maxHeight = h + 'px';
+    }
+    const selected = panel.querySelector('.is-selected');
+    if (selected) panel.scrollTop = selected.offsetTop - panel.clientHeight / 2 + selected.clientHeight / 2;
+
+    OPEN.panel = panel; OPEN.sel = sel;
+    trigger.setAttribute('aria-expanded', 'true');
+  }
+
+  function enhanceSelect(sel) {
+    if (sel._csel || sel.multiple || sel.closest('.csel')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'csel';
+    if (sel.classList.contains('filter-bar__select')) wrap.classList.add('csel--filter');
+    if (sel.closest('td, .data-table')) wrap.classList.add('csel--compact');
+    sel.parentNode.insertBefore(wrap, sel);
+    wrap.appendChild(sel);
+    sel.classList.add('csel__native');
+    sel.tabIndex = -1;
+
+    const trigger = document.createElement('button');
+    trigger.type = 'button';
+    trigger.className = 'csel__trigger';
+    trigger.setAttribute('aria-haspopup', 'listbox');
+    trigger.setAttribute('aria-expanded', 'false');
+    const text = document.createElement('span');
+    text.className = 'csel__text';
+    const arrow = document.createElement('span');
+    arrow.className = 'csel__arrow';
+    arrow.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>';
+    trigger.append(text, arrow);
+    wrap.appendChild(trigger);
+    sel._csel = { wrap, trigger, text };
+
+    trigger.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); _openPanel(sel); });
+    trigger.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const d = e.key === 'ArrowDown' ? 1 : -1;
+        const i = Math.max(0, Math.min(sel.options.length - 1, sel.selectedIndex + d));
+        _choose(sel, i);
+      } else if (e.key === 'Escape') { _closePanel(); }
+    });
+    sel.addEventListener('change', () => _refresh(sel));
+    // اگر گزینه‌ها بعداً با innerHTML عوض شدند، برچسب هم به‌روز شود
+    new MutationObserver(() => _refresh(sel)).observe(sel, { childList: true, subtree: true, attributes: true, attributeFilter: ['selected', 'disabled'] });
+    _refresh(sel);
+  }
+
+  // وقتی کد قدیمی select.value = ... می‌زند، دکمه‌ی نمایشی هم هماهنگ شود
+  const vd = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+  if (vd && vd.set) {
+    Object.defineProperty(HTMLSelectElement.prototype, 'value', {
+      get: vd.get, configurable: true,
+      set(v) { vd.set.call(this, v); _refresh(this); }
+    });
+  }
+
+  function enhanceAll(root) {
+    (root || document).querySelectorAll('select').forEach(enhanceSelect);
+  }
+
+  document.addEventListener('click', (e) => {
+    if (OPEN.panel && !OPEN.panel.contains(e.target)) _closePanel();
+  }, true);
+  window.addEventListener('resize', _closePanel);
+  window.addEventListener('scroll', (e) => { if (OPEN.panel && !OPEN.panel.contains(e.target)) _closePanel(); }, true);
+
+  function start() {
+    enhanceAll();
+    new MutationObserver((muts) => {
+      for (const m of muts) m.addedNodes.forEach(n => {
+        if (n.nodeType !== 1) return;
+        if (n.tagName === 'SELECT') enhanceSelect(n); else if (n.querySelectorAll) enhanceAll(n);
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();

@@ -10,6 +10,7 @@
 }
 
 .chart-card {
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-card);
@@ -27,5 +28,6 @@
 }
 
 @media (max-width: 900px) {
-  .chart-grid { grid-template-columns: 1fr; }
+  .chart-grid { grid-template-columns: minmax(0, 1fr); }
+  .chart-card { min-width: 0; padding: var(--space-3); }
 }
