@@ -98,21 +98,21 @@
 .dash-header__subtitle { font-size: var(--fs-base); color: var(--text-secondary); margin-top: var(--space-2); }
 .dash-header__actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
 .dash-header__icon-row { display: flex; align-items: center; gap: var(--space-2); }
-.dash-header__backup-btn { display: inline-flex; align-items: center; gap: 6px; }
+.dash-header__backup-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: var(--fs-small); font-weight: 600; }
+.dash-header__backup-label--short { display: none; }
 .dash-header__reminder { text-align: end; }
 @media (max-width: 480px) {
   .dash-header { flex-direction: column; align-items: stretch; }
   .dash-header__subtitle { display: none; } /* روی موبایل همین کارت‌های KPI زیرش خودشون "دید کلی" رو نشون می‌دن، تکرار متن لازم نیست */
   .dash-header__actions { align-items: stretch; }
-  /* دکمه بکاپ روی موبایل: دکمه‌ی کامل با آیکون + متن کوتاه، کنار آیکون تنظیمات؛
+  /* دکمه بکاپ روی موبایل: کوچک و جمع‌وجور (آیکون + متن کوتاه)، هم‌اندازه آیکون تنظیمات؛
      یادآوری تاریخ آخرین بکاپ زیرش کامل باقی می‌ماند (طبق درخواست قبلی حذف نشود) */
-  .dash-header__icon-row { gap: var(--space-2); }
-  .dash-header__backup-btn {
-    flex: 1; height: var(--touch-target); padding: 0 14px;
-    justify-content: center; border-radius: var(--radius-btn);
-    font-size: var(--fs-base); white-space: nowrap;
-  }
-  .dash-header__icon-row .icon-btn { flex: 0 0 var(--touch-target); height: var(--touch-target); }
+  .dash-header__icon-row { gap: var(--space-2); justify-content: flex-start; }
+  .dash-header .dash-header__backup-btn { height: 34px; padding: 0 12px; border-radius: 9px; font-size: 12.5px; white-space: nowrap;
+    background: transparent; color: var(--accent-gold); border-color: var(--accent-gold); }
+  .dash-header__backup-label--full { display: none; }
+  .dash-header__backup-label--short { display: inline; }
+  .dash-header__icon-row .icon-btn { flex: 0 0 34px; width: 34px; height: 34px; }
   .dash-header__reminder { text-align: start; margin-top: 4px; }
 }
 
@@ -237,6 +237,20 @@
 .jdp-day--today { border: 1px solid var(--accent-gold); }
 .jdp-day--selected { background: var(--accent-gold); color: #1C1610; font-weight: 700; }
 .jdp-day--blank { pointer-events: none; }
+.jdp-title { display: inline-flex; align-items: center; gap: 4px; font-size: var(--fs-base); }
+.jdp-chip {
+  background: var(--bg-secondary); border: 1px solid var(--border-soft); border-radius: 8px;
+  color: var(--text-primary); font: inherit; font-weight: 600; padding: 6px 10px; min-height: 34px; cursor: pointer;
+}
+.jdp-chip:hover, .jdp-chip:active { border-color: var(--accent-gold); color: var(--accent-gold); }
+.jdp-cells { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.jdp-cell {
+  min-height: 44px; border-radius: 10px; border: 1px solid var(--border-soft); background: transparent;
+  color: var(--text-primary); font: inherit; font-size: var(--fs-base); cursor: pointer;
+}
+.jdp-cell:hover { background: var(--bg-secondary); }
+.jdp-cell--today { border-color: var(--accent-gold); }
+.jdp-cell--selected { background: var(--accent-gold); color: #1C1610; font-weight: 700; border-color: var(--accent-gold); }
 .jdp-today-btn { width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 1px solid var(--border-soft); background: transparent; color: var(--accent-gold); min-height: var(--touch-target); }
 .jdp-input { cursor: pointer; background: var(--bg-primary); }
 

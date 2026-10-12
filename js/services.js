@@ -116,7 +116,6 @@ function toggleServiceStatus(id) {
 function _serviceFormHtml(svc) {
   const isEdit = !!svc;
   const s = svc || { name: '', category: '', price: 0, duration: 60 };
-  const categoryOptions = getAllServiceCategories().map(c => `<option value="${c}"></option>`).join('');
 
   return `
     <h2>${isEdit ? 'ویرایش خدمت' : 'افزودن خدمت جدید'}</h2>
@@ -124,10 +123,11 @@ function _serviceFormHtml(svc) {
       <label>نام خدمت</label>
       <input id="f_name" type="text" value="${s.name}" placeholder="مثلاً: کراتین مو" />
     </div>
-    <div class="form-field">
+    <div class="form-field searchable-select">
       <label>دسته‌بندی</label>
-      <input id="f_category" type="text" list="serviceCategoryList" value="${s.category}" placeholder="مثلاً: مو، ناخن، شیدینگ لب..." />
-      <datalist id="serviceCategoryList">${categoryOptions}</datalist>
+      <input id="f_category" type="text" autocomplete="off" value="${s.category}" placeholder="انتخاب از لیست یا تایپ دسته‌ی جدید..." />
+      <button type="button" class="combo-toggle" id="f_categoryToggle" aria-label="نمایش دسته‌بندی‌ها"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div id="f_categoryDropdown" class="searchable-select__dropdown"></div>
     </div>
     <div class="form-field">
       <label>قیمت (ریال)</label>
@@ -144,9 +144,46 @@ function _serviceFormHtml(svc) {
   `;
 }
 
+/** لیست پیشنهاد دسته‌بندی: با لمس باز می‌شود، با تایپ فیلتر می‌شود، تایپ آزاد هم مجاز است
+ *  (جایگزین <datalist> که روی موبایل/PWA درست باز نمی‌شد) */
+function _initCategoryCombo() {
+  const input = document.getElementById('f_category');
+  const dropdown = document.getElementById('f_categoryDropdown');
+  const toggle = document.getElementById('f_categoryToggle');
+  if (!input || !dropdown) return;
+  const all = getAllServiceCategories();
+
+  function render(filter) {
+    const q = _normalizeSearch(filter);
+    const list = q ? all.filter(c => _normalizeSearch(c).includes(q)) : all;
+    let html = list.map(c => `<div class="searchable-select__item" data-v="${c}"><span>${c}</span></div>`).join('');
+    const typed = (filter || '').trim();
+    if (typed && !all.some(c => c === typed)) {
+      html += `<div class="searchable-select__item searchable-select__item--new" data-v="${typed}">+ دسته‌ی جدید: «${typed}»</div>`;
+    }
+    if (!html) html = `<div class="searchable-select__item searchable-select__item--empty">دسته‌ای وجود ندارد — نام را تایپ کنید</div>`;
+    dropdown.innerHTML = html;
+    dropdown.classList.add('is-open');
+    dropdown.querySelectorAll('[data-v]').forEach(el => {
+      el.addEventListener('click', () => { input.value = el.dataset.v; dropdown.classList.remove('is-open'); });
+    });
+  }
+  input.addEventListener('focus', () => render(''));
+  input.addEventListener('input', () => render(input.value));
+  toggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (dropdown.classList.contains('is-open')) dropdown.classList.remove('is-open'); else { render(''); }
+  });
+  document.addEventListener('click', function _closer(e) {
+    if (!document.body.contains(input)) { document.removeEventListener('click', _closer); return; }
+    if (!dropdown.contains(e.target) && e.target !== input && !toggle.contains(e.target)) dropdown.classList.remove('is-open');
+  });
+}
+
 function addService() {
   openModal(_serviceFormHtml(null));
   attachAmountInput(document.getElementById('f_price'));
+  _initCategoryCombo();
 }
 
 function editService(id) {
@@ -154,6 +191,7 @@ function editService(id) {
   if (!s) return;
   openModal(_serviceFormHtml(s));
   attachAmountInput(document.getElementById('f_price'));
+  _initCategoryCombo();
 }
 
 function _saveServiceForm(id) {

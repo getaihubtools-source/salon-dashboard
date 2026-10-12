@@ -6,6 +6,8 @@
 let _activeDateInput = null;
 let _dpViewYear = null;
 let _dpViewMonth = null;
+let _dpMode = 'days';      // days | months | years
+let _dpYearStart = null;   // اولین سال صفحه‌ی انتخاب سال (۱۲ سال در هر صفحه)
 
 /** فعال‌سازی تقویم شمسی روی یک input — تایپ دستی غیرفعال می‌شود، فقط با کلیک باز می‌شود */
 function attachJalaliDatePicker(inputEl) {
@@ -45,6 +47,7 @@ function _openDatePicker(inputEl) {
   const today = parseJalaliParts(todayJalali());
   _dpViewYear = (current && current.jy) || today.jy;
   _dpViewMonth = (current && current.jm) || today.jm;
+  _dpMode = 'days';
 
   const el = _ensureDatePickerEl();
   _renderDatePickerBody();
@@ -76,6 +79,8 @@ function _positionDatePicker(inputEl, el) {
 }
 
 function _renderDatePickerBody() {
+  if (_dpMode === 'months') return _renderMonthsView();
+  if (_dpMode === 'years') return _renderYearsView();
   const el = document.getElementById('jalaliDatePickerPopup');
   const jy = _dpViewYear, jm = _dpViewMonth;
   const selected = (_activeDateInput && _activeDateInput.value) ? parseJalaliParts(_activeDateInput.value) : null;
@@ -98,7 +103,10 @@ function _renderDatePickerBody() {
   el.innerHTML = `
     <div class="jdp-header">
       <button type="button" class="jdp-nav" onclick="_shiftDatePickerMonth(-1)" title="ماه قبل">›</button>
-      <span>${jalaliMonthLabel(jy, jm)}</span>
+      <span class="jdp-title">
+        <button type="button" class="jdp-chip" onclick="_setDatePickerMode('months')" title="انتخاب ماه">${JALALI_MONTH_NAMES[jm - 1]}</button>
+        <button type="button" class="jdp-chip" onclick="_setDatePickerMode('years')" title="انتخاب سال">${jy}</button>
+      </span>
       <button type="button" class="jdp-nav" onclick="_shiftDatePickerMonth(1)" title="ماه بعد">‹</button>
     </div>
     <div class="jdp-dow">${dowLabels.map(d => `<span>${d}</span>`).join('')}</div>
@@ -106,6 +114,59 @@ function _renderDatePickerBody() {
     <button type="button" class="jdp-today-btn" onclick="_pickDate(${todayParts.jy},${todayParts.jm},${todayParts.jd})">امروز</button>
   `;
 }
+
+
+function _setDatePickerMode(mode) {
+  _dpMode = mode;
+  if (mode === 'years') _dpYearStart = _dpViewYear - 4;
+  _renderDatePickerBody();
+  if (_activeDateInput) _positionDatePicker(_activeDateInput, document.getElementById('jalaliDatePickerPopup'));
+}
+
+/** صفحه‌ی انتخاب ماه: ۱۲ ماه در شبکه‌ی ۳×۴ + پرش سال با فلش */
+function _renderMonthsView() {
+  const el = document.getElementById('jalaliDatePickerPopup');
+  const todayParts = parseJalaliParts(todayJalali());
+  const cells = JALALI_MONTH_NAMES.map((name, i) => {
+    const m = i + 1;
+    const cls = [m === _dpViewMonth ? 'jdp-cell--selected' : '', (_dpViewYear === todayParts.jy && m === todayParts.jm) ? 'jdp-cell--today' : ''].join(' ');
+    return `<button type="button" class="jdp-cell ${cls}" onclick="_pickDatePickerMonth(${m})">${name}</button>`;
+  }).join('');
+  el.innerHTML = `
+    <div class="jdp-header">
+      <button type="button" class="jdp-nav" onclick="_shiftDatePickerYear(-1)" title="سال قبل">›</button>
+      <span class="jdp-title"><button type="button" class="jdp-chip" onclick="_setDatePickerMode('years')" title="انتخاب سال">${_dpViewYear}</button></span>
+      <button type="button" class="jdp-nav" onclick="_shiftDatePickerYear(1)" title="سال بعد">‹</button>
+    </div>
+    <div class="jdp-cells">${cells}</div>
+    <button type="button" class="jdp-today-btn" onclick="_setDatePickerMode('days')">بازگشت به روزها</button>
+  `;
+}
+
+/** صفحه‌ی انتخاب سال: ۱۲ سال در هر صفحه؛ با فلش‌ها ۱۲ سال جلو/عقب می‌رود */
+function _renderYearsView() {
+  const el = document.getElementById('jalaliDatePickerPopup');
+  const todayParts = parseJalaliParts(todayJalali());
+  let cells = '';
+  for (let y = _dpYearStart; y < _dpYearStart + 12; y++) {
+    const cls = [y === _dpViewYear ? 'jdp-cell--selected' : '', y === todayParts.jy ? 'jdp-cell--today' : ''].join(' ');
+    cells += `<button type="button" class="jdp-cell ${cls}" onclick="_pickDatePickerYear(${y})">${y}</button>`;
+  }
+  el.innerHTML = `
+    <div class="jdp-header">
+      <button type="button" class="jdp-nav" onclick="_shiftDatePickerYearPage(-12)" title="۱۲ سال قبل">›</button>
+      <span class="jdp-title">${_dpYearStart} – ${_dpYearStart + 11}</span>
+      <button type="button" class="jdp-nav" onclick="_shiftDatePickerYearPage(12)" title="۱۲ سال بعد">‹</button>
+    </div>
+    <div class="jdp-cells">${cells}</div>
+    <button type="button" class="jdp-today-btn" onclick="_setDatePickerMode('days')">بازگشت به روزها</button>
+  `;
+}
+
+function _shiftDatePickerYear(delta) { _dpViewYear = Math.min(1500, Math.max(1300, _dpViewYear + delta)); _renderDatePickerBody(); }
+function _shiftDatePickerYearPage(delta) { _dpYearStart = Math.min(1489, Math.max(1300, _dpYearStart + delta)); _renderDatePickerBody(); }
+function _pickDatePickerMonth(m) { _dpViewMonth = m; _setDatePickerMode('days'); }
+function _pickDatePickerYear(y) { _dpViewYear = y; _setDatePickerMode('months'); }
 
 function _shiftDatePickerMonth(delta) {
   const { jy, jm } = shiftJalaliMonth(_dpViewYear, _dpViewMonth, delta);

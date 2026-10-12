@@ -154,13 +154,12 @@ function _transactionFormHtml(tx) {
   const customers = getAll('customers');
   const services = getAll('services');
   const employees = getAll('employees');
-  const custOptions = customers.map(c => `<option value="${c.id}" ${t.customerId === c.id ? 'selected' : ''}>${c.name}</option>`).join('');
   const svcOptions = `<option value="">—</option>` + services.map(s => `<option value="${s.id}" ${t.serviceId === s.id ? 'selected' : ''}>${s.name}</option>`).join('');
   const empOptions = `<option value="">—</option>` + employees.map(e => `<option value="${e.id}" ${t.employeeId === e.id ? 'selected' : ''}>${e.name}</option>`).join('');
 
   return `
     <h2>${isEdit ? 'ویرایش تراکنش' : 'ثبت تراکنش درآمد'}</h2>
-    <div class="form-field"><label>مشتری</label><select id="f_customer">${custOptions || '<option value="">ابتدا مشتری ثبت کنید</option>'}</select></div>
+    ${renderCustomerSearchField({ selectedId: t.customerId })}
     <div class="form-field"><label>خدمت/محصول (اختیاری)</label><select id="f_service">${svcOptions}</select></div>
     <div class="form-field"><label>همکار (اختیاری)</label><select id="f_employee">${empOptions}</select></div>
     <div class="form-field"><label>دسته</label>
@@ -182,6 +181,7 @@ function _transactionFormHtml(tx) {
 
 function addTransaction() {
   openModal(_transactionFormHtml(null));
+  initCustomerSearchField(null);
   attachAmountInput(document.getElementById('f_amount'));
   attachJalaliDatePicker(document.getElementById('f_date'));
 }
@@ -190,6 +190,7 @@ function editTransaction(id) {
   const t = getById('transactions', id);
   if (!t) return;
   openModal(_transactionFormHtml(t));
+  initCustomerSearchField(t.customerId);
   attachAmountInput(document.getElementById('f_amount'));
   attachJalaliDatePicker(document.getElementById('f_date'));
 }
@@ -203,7 +204,7 @@ function _saveTransactionForm(id) {
   const paymentMethod = document.getElementById('f_method').value;
   const date = document.getElementById('f_date').value.trim();
 
-  if (!customerId || !amount || !date) { showToast('مشتری، مبلغ و تاریخ الزامی است', 'error'); return; }
+  if (!customerId || !amount || !date) { showToast('مشتری را از لیست جستجو انتخاب کنید و مبلغ و تاریخ را وارد کنید', 'error'); return; }
 
   if (id) {
     const old = getById('transactions', id);

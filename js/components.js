@@ -690,3 +690,77 @@ function renderFilterBar({ containerId, searchPlaceholder, chips, onSearch, onCh
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
+
+
+/* ==========================================================================
+   فیلد مشتریِ جستجوشونده (به‌جای لیست بلند همه‌ی مشتریان)
+   استفاده: renderCustomerSearchField({selectedId}) داخل فرم + initCustomerSearchField(selectedId)
+   مقدار نهایی در <input type="hidden" id="f_customer"> می‌نشیند (id مشتری).
+   جستجو روی نام و موبایل است و حروف عربی/فارسی و ارقام را یکسان می‌گیرد.
+   ========================================================================== */
+function _normalizeSearch(text) {
+  return String(text || '')
+    .replace(/ي/g, 'ی').replace(/ك/g, 'ک')
+    .replace(/[۰-۹]/g, d => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(d)))
+    .replace(/[٠-٩]/g, d => String('٠١٢٣٤٥٦٧٨٩'.indexOf(d)))
+    .replace(/[\u200c\s]+/g, ' ').trim().toLowerCase();
+}
+
+function renderCustomerSearchField({ selectedId, label } = {}) {
+  return `
+    <div class="form-field searchable-select">
+      <label>${label || 'مشتری'}</label>
+      <input id="f_customerSearch" type="text" autocomplete="off" placeholder="نام یا شماره موبایل را تایپ کنید..." />
+      <input type="hidden" id="f_customer" value="${selectedId || ''}" />
+      <div id="f_customerDropdown" class="searchable-select__dropdown"></div>
+    </div>`;
+}
+
+function initCustomerSearchField(selectedId) {
+  const customers = getAll('customers');
+  const input = document.getElementById('f_customerSearch');
+  const hidden = document.getElementById('f_customer');
+  const dropdown = document.getElementById('f_customerDropdown');
+  if (!input || !hidden || !dropdown) return;
+  const LIMIT = 12;
+  const labelOf = c => c.name + (c.phone ? ' — ' + c.phone : '');
+
+  const current = selectedId ? customers.find(c => c.id === Number(selectedId)) : null;
+  input.value = current ? labelOf(current) : '';
+  hidden.value = current ? current.id : '';
+
+  function renderList(query) {
+    const q = _normalizeSearch(query);
+    const matches = q
+      ? customers.filter(c => _normalizeSearch(c.name).includes(q) || _normalizeSearch(c.phone).includes(q))
+      : customers;
+    let html = matches.slice(0, LIMIT).map(c => `
+      <div class="searchable-select__item" data-id="${c.id}">
+        <span>${c.name}</span><span class="searchable-select__phone">${c.phone || ''}</span>
+      </div>`).join('');
+    if (!matches.length) {
+      html = `<div class="searchable-select__item searchable-select__item--empty">${customers.length ? 'مشتری‌ای با این مشخصات پیدا نشد' : 'هنوز مشتری ثبت نشده است'}</div>`;
+    } else if (matches.length > LIMIT) {
+      html += `<div class="searchable-select__item searchable-select__item--empty">${matches.length - LIMIT} مورد دیگر — برای محدودتر شدن، بیشتر تایپ کنید</div>`;
+    }
+    dropdown.innerHTML = html;
+    dropdown.classList.add('is-open');
+    dropdown.querySelectorAll('.searchable-select__item[data-id]').forEach(el => {
+      el.addEventListener('click', () => {
+        const c = customers.find(x => x.id === Number(el.dataset.id));
+        hidden.value = c ? c.id : '';
+        input.value = c ? labelOf(c) : '';
+        dropdown.classList.remove('is-open');
+        hidden.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+  }
+
+  // با فوکوس، متن انتخاب‌شده انتخاب می‌شود تا با اولین حرف جایگزین شود و لیست کامل بالا نیاید
+  input.addEventListener('focus', () => { if (hidden.value) input.select(); renderList(hidden.value ? '' : input.value); });
+  input.addEventListener('input', () => { hidden.value = ''; renderList(input.value); });
+  document.addEventListener('click', function _outsideCloser(e) {
+    if (!document.body.contains(input)) { document.removeEventListener('click', _outsideCloser); return; }
+    if (!dropdown.contains(e.target) && e.target !== input) dropdown.classList.remove('is-open');
+  });
+}

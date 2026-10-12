@@ -4,7 +4,7 @@
    هیچ دسترسی و دخالتی ندارد — آن API کاملاً جداست و اینجا لمس نمی‌شود.
    ========================================================================== */
 
-const CACHE_NAME = 'salon-dashboard-shell-v11';
+const CACHE_NAME = 'salon-dashboard-shell-v13';
 
 const APP_SHELL = [
   './',
