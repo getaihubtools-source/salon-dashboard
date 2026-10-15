@@ -41,6 +41,7 @@ function renderDashHeader() {
     </div>
     <div class="dash-header__actions">
       <div class="dash-header__icon-row">
+        ${globalSearchButtonHtml()}
         <a class="icon-btn" href="settings.html" title="تنظیمات">${_navIconSvg('settings', 18)}</a>
         <button class="btn btn-primary dash-header__backup-btn" onclick="_backupFromDashboard()" title="تهیه نسخه پشتیبان">${_actionIconSvg('backup', 15)}<span class="dash-header__backup-label dash-header__backup-label--full">تهیه نسخه پشتیبان</span><span class="dash-header__backup-label dash-header__backup-label--short">پشتیبان‌گیری</span></button>
       </div>
@@ -103,7 +104,8 @@ function loadDashboardKPIs() {
     renderKpiCard({ title: 'هزینه این ماه', value: formatCurrency(monthExpense), variant: 'negative' }),
     renderKpiCard({ title: 'سود واقعی این ماه', value: formatCurrency(realProfit), variant: realProfit >= 0 ? 'positive' : 'negative', size: 'primary' }),
     renderKpiCard({ title: 'تعداد کل مشتریان', value: customerCount }),
-    renderKpiCard({ title: 'نوبت‌های امروز', value: todayAppointments, variant: 'gold' })
+    renderKpiCard({ title: 'نوبت‌های امروز', value: todayAppointments, variant: 'gold' }),
+    renderKpiCard({ title: 'مطالبات معوق', value: formatCurrency(totalReceivables()), variant: totalReceivables() ? 'negative' : undefined })
   ].join('');
 }
 

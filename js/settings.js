@@ -129,7 +129,11 @@ function renderBackupSection() {
 
   document.getElementById('backupSlot').innerHTML = `
     <p style="color:var(--text-secondary);margin-bottom:14px;">آخرین نسخه پشتیبان: ${lastBackupText}</p>
-    <button class="btn btn-primary" onclick="triggerBackupExport()">تهیه نسخه پشتیبان</button>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <button class="btn btn-primary" onclick="triggerBackupExport()">تهیه نسخه پشتیبان</button>
+      <button class="btn btn-ghost" onclick="shareBackupFromSettings()">ارسال بکاپ (روبیکا / تلگرام ...)</button>
+    </div>
+    <p id="storagePersistNote" style="color:var(--text-secondary);font-size:var(--fs-small);margin-top:12px;"></p>
     <div style="margin-top:20px;">
       <label style="display:block;font-size:var(--fs-small);color:var(--text-secondary);margin-bottom:8px;">
         بازیابی از فایل پشتیبان (کل اطلاعات فعلی جایگزین می‌شود)
@@ -137,13 +141,33 @@ function renderBackupSection() {
       <div class="file-input-row">
         <label class="file-input-label" for="backupFileInput">
           انتخاب فایل
-          <input id="backupFileInput" class="file-input-hidden" type="file" accept="application/json" onchange="_onBackupFileChosen()" />
+          <input id="backupFileInput" class="file-input-hidden" type="file" accept=".json,.txt,application/json,text/plain" onchange="_onBackupFileChosen()" />
         </label>
         <span id="backupFileName" class="file-input-name">فایلی انتخاب نشده</span>
       </div>
       <button class="btn btn-danger" style="margin-top:12px;" onclick="handleBackupImport()">بازیابی از فایل پشتیبان</button>
     </div>
   `;
+  _renderStoragePersistNote();
+}
+
+async function shareBackupFromSettings() {
+  const res = await shareBackup();
+  if (res.cancelled) return;
+  showToast(res.shared ? 'بکاپ ارسال شد' : 'اشتراک‌گذاری مستقیم پشتیبانی نشد؛ فایل دانلود شد', res.shared ? 'success' : 'default');
+  renderBackupSection();
+}
+
+/** وضعیت «ذخیره‌سازی پایدار» مرورگر: اگر فعال نباشد، مرورگر در کمبود حافظه ممکن است داده را پاک کند */
+async function _renderStoragePersistNote() {
+  const el = document.getElementById('storagePersistNote');
+  if (!el || !(navigator.storage && navigator.storage.persisted)) return;
+  try {
+    const ok = await navigator.storage.persisted();
+    el.textContent = ok
+      ? 'حفاظت داده: ذخیره‌سازی پایدار فعال است.'
+      : 'حفاظت داده: ذخیره‌سازی پایدار فعال نیست؛ برنامه را روی صفحه‌ی اصلی نصب کنید و مرتب بکاپ بگیرید.';
+  } catch (e) {}
 }
 
 function _onBackupFileChosen() {

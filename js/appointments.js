@@ -83,17 +83,36 @@ function _tomorrowJalali() {
   return toJalali(d);
 }
 
+function _relDayLabel(dateStr) {
+  if (dateStr === todayJalali()) return 'امروز';
+  if (dateStr === _tomorrowJalali()) return 'فردا';
+  const d = fromJalali(dateStr), t = fromJalali(todayJalali());
+  if (d && t && Math.round((t - d) / 86400000) === 1) return 'دیروز';
+  return '';
+}
+
+/** ناوبری یکپارچه: [‹] [تاریخ انتخابی + برچسب امروز/فردا/دیروز] [›] — [امروز] — [روز | هفته] */
 function renderDateNav() {
   const el = document.getElementById('dateNavSlot');
-  const isTomorrow = _apptState.mode === 'day' && _apptState.selectedDate === _tomorrowJalali();
+  const isWeek = _apptState.mode === 'week';
+  const date = _apptState.selectedDate;
+  const rel = isWeek ? '۷ روز از' : _relDayLabel(date);
+  const showToday = isWeek || date !== todayJalali();
   el.innerHTML = `
-    <div class="filter-bar">
-      <button class="chip ${_apptState.mode === 'day' && _apptState.selectedDate === todayJalali() ? 'is-active' : ''}" onclick="_goToday()">امروز</button>
-      <button class="chip ${isTomorrow ? 'is-active' : ''}" onclick="_goTomorrow()">فردا</button>
-      <button class="chip ${_apptState.mode === 'week' ? 'is-active' : ''}" onclick="_goThisWeek()">این هفته</button>
-      <input id="dateNavInput" class="filter-bar__search" style="flex:0 0 150px;" type="text" value="${_apptState.selectedDate}" placeholder="تاریخ دلخواه" />
-      <button class="chip" onclick="_shiftDay(-1)">‹ روز قبل</button>
-      <button class="chip" onclick="_shiftDay(1)">روز بعد ›</button>
+    <div class="date-nav">
+      <div class="date-nav__stepper">
+        <button class="date-nav__arrow" onclick="_shiftDay(${isWeek ? -7 : -1})" aria-label="قبلی">›</button>
+        <label class="date-nav__current">
+          ${rel ? `<small>${rel}</small>` : ''}
+          <input id="dateNavInput" type="text" value="${date}" readonly />
+        </label>
+        <button class="date-nav__arrow" onclick="_shiftDay(${isWeek ? 7 : 1})" aria-label="بعدی">‹</button>
+      </div>
+      ${showToday ? `<button class="chip" onclick="_goToday()">امروز</button>` : ''}
+      <div class="view-toggle date-nav__mode">
+        <button class="${!isWeek ? 'is-active' : ''}" onclick="_setApptMode('day')">روز</button>
+        <button class="${isWeek ? 'is-active' : ''}" onclick="_setApptMode('week')">هفته</button>
+      </div>
     </div>`;
   document.getElementById('dateNavInput').addEventListener('change', (e) => {
     _apptState.mode = 'day';
@@ -105,17 +124,11 @@ function renderDateNav() {
 }
 
 function _goToday() { _apptState.mode = 'day'; _apptState.selectedDate = todayJalali(); renderDateNav(); renderAppointmentsList(); }
-function _goTomorrow() {
-  _apptState.mode = 'day';
-  _apptState.selectedDate = _tomorrowJalali();
-  renderDateNav();
-  renderAppointmentsList();
-}
-function _goThisWeek() { _apptState.mode = 'week'; renderDateNav(); renderAppointmentsList(); }
+function _setApptMode(m) { _apptState.mode = m; renderDateNav(); renderAppointmentsList(); }
+/** delta روز (در حالت هفته ±۷ → فقط تاریخ مرجع جابه‌جا می‌شود اما هفته‌ی جاری همیشه از isDateInRange می‌آید) */
 function _shiftDay(delta) {
   const d = fromJalali(_apptState.selectedDate);
   d.setDate(d.getDate() + delta);
-  _apptState.mode = 'day';
   _apptState.selectedDate = toJalali(d);
   renderDateNav();
   renderAppointmentsList();
@@ -147,12 +160,13 @@ function renderApptFilters() {
    لیست نوبت‌ها (روزانه یا هفتگی) + فیلترها
    -------------------------------------------------------------------- */
 function renderAppointmentsList() {
+  if (typeof isTimelineActive === 'function' && isTimelineActive()) { renderApptTimeline(); return; }
   const customers = getAll('customers');
   const employees = getAll('employees');
   const services = getAll('services');
 
   let rows = _apptState.mode === 'week'
-    ? query('appointments', a => isDateInRange(a.date, 'week'))
+    ? query('appointments', a => { const s0 = fromJalali(_apptState.selectedDate), d0 = fromJalali(a.date); if (!s0 || !d0) return false; const diff = Math.round((d0 - s0) / 86400000); return diff >= 0 && diff < 7; })
     : query('appointments', a => a.date === _apptState.selectedDate);
 
   if (_apptState.filterEmployee !== 'all') rows = rows.filter(a => a.employeeId === Number(_apptState.filterEmployee));
@@ -410,6 +424,12 @@ function _saveAppointmentForm(id) {
   if (conflict) {
     showToast('این بازه زمانی برای این متخصص قبلاً رزرو شده است.', 'error');
     return;
+  }
+
+  const _emp = getById('employees', employeeId);
+  const _sch = _emp ? employeeDaySchedule(_emp, date) : null;
+  if (_sch && (!_sch.on || time < _sch.start || time >= _sch.end)) {
+    setTimeout(() => showToast(`توجه: ${_emp.name} در این روز/ساعت طبق برنامه کاری حضور ندارد`, 'error'), 400);
   }
 
   let customerId;

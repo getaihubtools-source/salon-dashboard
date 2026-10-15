@@ -11,77 +11,98 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="مدیریار سالن" />
-<title>مدیریار سالن | داشبورد هوشمند سالن زیبایی</title>
+<title>مدیریار سالن | مدیریت نوبت، نسیه و صندوق سالن زیبایی</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" />
 <link rel="stylesheet" href="css/variables.css" />
 <style>
   body { background: var(--bg-primary); overflow-x: hidden; }
-  .landing { max-width: 980px; margin: 0 auto; padding: 48px 20px 32px; }
+  .landing { max-width: 1040px; margin: 0 auto; padding: 40px 20px 32px; }
+  .landing a { text-decoration: none; }
 
-  .landing-hero { text-align: center; margin-bottom: 56px; }
-  .landing-hero__badge {
-    display: inline-block; padding: 6px 16px; border-radius: 999px;
-    background: var(--accent-gold-dim); color: var(--accent-gold);
-    font-size: var(--fs-small); margin-bottom: 18px;
-  }
-  .landing-hero h1 { font-size: 34px; margin: 0 0 14px; }
-  .landing-hero h1 span { color: var(--accent-gold); }
-  .landing-hero p { color: var(--text-secondary); font-size: 16px; max-width: 560px; margin: 0 auto; line-height: 1.9; }
+  /* هیرو */
+  .landing-hero { text-align: center; margin-bottom: 64px; position: relative; }
+  .landing-hero::before { content:''; position:absolute; inset:-60px 0 auto; height:340px; background: radial-gradient(ellipse at 50% 0%, rgba(212,175,122,.16), transparent 70%); pointer-events:none; }
+  .landing-hero > * { position: relative; }
+  .landing-hero__badge { display:inline-block; padding:6px 16px; border-radius:999px; background:var(--accent-gold-dim); color:var(--accent-gold); font-size:var(--fs-small); margin-bottom:18px; }
+  .landing-hero h1 { font-size:42px; margin:0 0 14px; line-height:1.3; }
+  .landing-hero h1 span { color:var(--accent-gold); }
+  .landing-hero__sub { color:var(--text-secondary); font-size:17px; max-width:620px; margin:0 auto 26px; line-height:2; }
+  .hero-cta { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+  .btn-land { display:inline-flex; align-items:center; gap:8px; padding:13px 26px; border-radius:12px; font-size:15px; font-weight:700; border:1px solid transparent; cursor:pointer; font-family:inherit; }
+  .btn-land--gold { background:var(--accent-gold); color:#1C1610; }
+  .btn-land--ghost { background:transparent; color:var(--text-primary); border-color:var(--border-hover); }
+  .trust { display:flex; justify-content:center; gap:8px 20px; flex-wrap:wrap; margin-top:22px; color:var(--text-muted); font-size:13px; }
+  .trust span::before { content:'✓'; color:var(--accent-emerald); margin-inline-end:6px; }
 
-  /* موکاپ CSS داشبورد — نه اسکرین‌شات واقعی */
-  .mockup {
-    margin: 40px auto 0; max-width: 640px; background: var(--bg-card);
-    border: 1px solid var(--border-soft); border-radius: 16px; padding: 18px;
-    box-shadow: var(--shadow-card);
-  }
-  .mockup__bar { display: flex; gap: 6px; margin-bottom: 14px; }
-  .mockup__bar span { width: 10px; height: 10px; border-radius: 50%; background: var(--border-hover); }
-  .mockup__kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-  .mockup__kpi { background: var(--bg-secondary); border-radius: 10px; padding: 12px; }
-  .mockup__kpi b { display: block; font-size: 15px; color: var(--accent-gold); margin-top: 6px; }
-  .mockup__kpi small { color: var(--text-muted); font-size: 10px; }
-  .mockup__chart { height: 90px; background: var(--bg-secondary); border-radius: 10px; display: flex; align-items: flex-end; gap: 6px; padding: 10px; }
-  .mockup__chart i { flex: 1; background: linear-gradient(180deg, var(--accent-gold), var(--accent-plum)); border-radius: 4px 4px 0 0; display: block; }
+  /* موکاپ */
+  .mockup { margin:44px auto 0; max-width:720px; background:var(--bg-card); border:1px solid var(--border-soft); border-radius:18px; padding:16px; box-shadow:var(--shadow-card); text-align:right; }
+  .mockup__bar { display:flex; gap:6px; margin-bottom:14px; }
+  .mockup__bar span { width:10px; height:10px; border-radius:50%; background:var(--border-hover); }
+  .mockup__kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:12px; }
+  .mockup__kpi { background:var(--bg-secondary); border-radius:10px; padding:12px; }
+  .mockup__kpi b { display:block; font-size:15px; color:var(--accent-gold); margin-top:6px; }
+  .mockup__kpi small { color:var(--text-muted); font-size:10px; }
+  .mockup__row { display:grid; grid-template-columns:1.1fr 1fr; gap:10px; }
+  .mockup__chart { height:120px; background:var(--bg-secondary); border-radius:10px; display:flex; align-items:flex-end; gap:6px; padding:10px; }
+  .mockup__chart i { flex:1; background:linear-gradient(180deg,var(--accent-gold),var(--accent-plum)); border-radius:4px 4px 0 0; display:block; }
+  .mockup__tl { height:120px; background:var(--bg-secondary); border-radius:10px; padding:8px; display:grid; grid-template-columns:1fr 1fr; gap:6px; position:relative; }
+  .mockup__tl i { display:block; border-radius:6px; font-style:normal; font-size:10px; padding:4px 6px; color:var(--text-secondary); }
+  .mockup__tl .a { background:rgba(212,175,122,.22); border:1px solid rgba(212,175,122,.6); grid-row:1 / span 2; }
+  .mockup__tl .b { background:rgba(156,79,150,.25); border:1px solid rgba(156,79,150,.6); margin-top:22px; }
+  .mockup__tl .c { background:rgba(63,174,140,.2); border:1px solid rgba(63,174,140,.55); grid-column:2; }
 
-  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 56px 0; }
-  .feature-card {
-    background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 14px;
-    padding: 20px; text-align: right;
-  }
-  .feature-card__icon { font-size: 24px; margin-bottom: 10px; }
-  .feature-card h3 { margin: 0 0 6px; font-size: 15px; }
-  .feature-card p { margin: 0; color: var(--text-secondary); font-size: var(--fs-small); line-height: 1.8; }
+  /* بخش‌ها */
+  .section-title { text-align:center; margin:0 0 8px; font-size:24px; }
+  .section-sub { text-align:center; color:var(--text-secondary); max-width:560px; margin:0 auto 28px; line-height:1.9; font-size:15px; }
+  .pains { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:0 0 64px; }
+  .pain { background:var(--bg-card); border:1px solid var(--border-soft); border-radius:14px; padding:18px; }
+  .pain b { display:block; margin-bottom:6px; color:var(--accent-rose); font-size:14px; }
+  .pain p { margin:0; color:var(--text-secondary); font-size:var(--fs-small); line-height:1.9; }
 
-  .install-box {
-    background: var(--bg-card); border: 1px solid var(--border-soft); border-radius: 16px;
-    padding: 28px; text-align: center; margin-bottom: 40px;
-  }
-  .install-box h2 { margin: 0 0 8px; font-size: 18px; }
-  .install-box p { color: var(--text-secondary); font-size: var(--fs-small); margin: 0 0 18px; }
-  .install-btn {
-    display: inline-flex; align-items: center; gap: 8px; padding: 13px 28px;
-    border-radius: 12px; border: none; font-size: 15px; font-weight: 700; cursor: pointer;
-  }
-  .install-btn--primary { background: var(--accent-gold); color: #1C1610; }
-  .install-btn--enter { background: var(--accent-emerald); color: #0d1f18; }
-  .enter-plain-link { display: block; margin-top: 14px; color: var(--text-secondary); font-size: var(--fs-small); }
+  .features { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin:0 0 20px; }
+  .feature-card { background:var(--bg-card); border:1px solid var(--border-soft); border-radius:14px; padding:20px; text-align:right; transition:border-color .2s, transform .2s; }
+  .feature-card:hover { border-color:rgba(212,175,122,.5); transform:translateY(-2px); }
+  .feature-card__icon { width:42px; height:42px; border-radius:11px; background:var(--accent-gold-dim); color:var(--accent-gold); display:flex; align-items:center; justify-content:center; margin-bottom:12px; }
+  .feature-card h3 { margin:0 0 6px; font-size:15px; }
+  .feature-card p { margin:0; color:var(--text-secondary); font-size:var(--fs-small); line-height:1.9; }
+  .also { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin:0 0 64px; }
+  .also span { padding:6px 14px; border-radius:999px; border:1px solid var(--border-soft); color:var(--text-secondary); font-size:13px; }
 
-  .guide-steps { text-align: right; max-width: 420px; margin: 0 auto; }
-  .guide-steps ol { padding-inline-start: 20px; color: var(--text-secondary); font-size: var(--fs-small); line-height: 2; }
+  .steps { display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:0 0 64px; counter-reset:s; }
+  .step { background:var(--bg-card); border:1px solid var(--border-soft); border-radius:14px; padding:18px 18px 18px 18px; position:relative; }
+  .step::before { counter-increment:s; content:counter(s); display:inline-flex; width:28px; height:28px; border-radius:50%; background:var(--accent-gold); color:#1C1610; font-weight:700; align-items:center; justify-content:center; margin-bottom:10px; }
+  .step b { display:block; margin-bottom:4px; } .step p { margin:0; color:var(--text-secondary); font-size:var(--fs-small); line-height:1.9; }
 
-  .landing-footer { text-align: center; padding-top: 24px; border-top: 1px solid var(--border-soft); }
-  .landing-footer__links { display: flex; justify-content: center; gap: 18px; margin-bottom: 12px; flex-wrap: wrap; }
-  .landing-footer__links a { color: var(--text-secondary); font-size: var(--fs-small); }
-  .landing-footer__links a:hover { color: var(--accent-gold); }
-  .landing-footer small { color: var(--text-muted); font-size: 11px; }
+  .privacy { display:flex; gap:18px; align-items:center; background:linear-gradient(135deg, rgba(212,175,122,.1), rgba(156,79,150,.08)); border:1px solid var(--border-soft); border-radius:16px; padding:22px; margin:0 0 64px; }
+  .privacy h3 { margin:0 0 6px; } .privacy p { margin:0; color:var(--text-secondary); line-height:1.9; font-size:14px; }
 
-  @media (max-width: 720px) {
-    .features { grid-template-columns: repeat(2, 1fr); }
-    .mockup__kpis { grid-template-columns: repeat(2, 1fr); }
-  }
-  @media (max-width: 460px) {
-    .features { grid-template-columns: 1fr; }
-    .landing-hero h1 { font-size: 26px; }
+  .faq { max-width:720px; margin:0 auto 64px; }
+  .faq details { background:var(--bg-card); border:1px solid var(--border-soft); border-radius:12px; padding:14px 16px; margin-bottom:10px; }
+  .faq summary { cursor:pointer; font-weight:600; }
+  .faq p { margin:10px 0 0; color:var(--text-secondary); font-size:14px; line-height:1.9; }
+
+  .install-box { background:var(--bg-card); border:1px solid rgba(212,175,122,.35); border-radius:16px; padding:30px; text-align:center; margin-bottom:40px; }
+  .install-box h2 { margin:0 0 8px; font-size:20px; }
+  .install-box p { color:var(--text-secondary); font-size:var(--fs-small); margin:0 0 18px; }
+  .install-btn { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; border-radius:12px; border:none; font-size:15px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .install-btn--primary { background:var(--accent-gold); color:#1C1610; }
+  .install-btn--enter { background:var(--accent-emerald); color:#0d1f18; }
+  .enter-plain-link { display:block; margin-top:14px; color:var(--text-secondary); font-size:var(--fs-small); }
+  .guide-steps { text-align:right; max-width:420px; margin:0 auto; }
+  .guide-steps ol { padding-inline-start:20px; color:var(--text-secondary); font-size:var(--fs-small); line-height:2; }
+
+  .landing-footer { text-align:center; padding-top:24px; border-top:1px solid var(--border-soft); }
+  .landing-footer__links { display:flex; justify-content:center; gap:18px; margin-bottom:12px; flex-wrap:wrap; }
+  .landing-footer__links a { color:var(--text-secondary); font-size:var(--fs-small); }
+  .landing-footer__links a:hover { color:var(--accent-gold); }
+  .landing-footer small { color:var(--text-muted); font-size:11px; }
+
+  @media (max-width:820px) { .features, .pains, .steps { grid-template-columns:repeat(2,1fr); } .mockup__row { grid-template-columns:1fr; } .privacy { flex-direction:column; text-align:center; } }
+  @media (max-width:560px) {
+    .features, .pains, .steps { grid-template-columns:1fr; }
+    .landing-hero h1 { font-size:30px; } .landing-hero__sub { font-size:15px; }
+    .mockup__kpis { grid-template-columns:repeat(2,1fr); }
+    .btn-land { width:100%; justify-content:center; }
   }
 </style>
 </head>
@@ -90,40 +111,80 @@
 <div class="landing">
 
   <div class="landing-hero">
-    <span class="landing-hero__badge">داشبورد اختصاصی سالن‌های زیبایی ایران</span>
-    <h1>مدیریار <span>سالن</span></h1>
-    <p>درآمد، هزینه، سود واقعی، نوبت‌دهی و مشتریان سالن‌تان را در یک داشبورد فارسی، سریع و کاملاً آفلاین مدیریت کنید — بدون نیاز به اینترنت دائمی، بدون سرور، با داده‌هایی که فقط روی همین دستگاه شما می‌ماند.</p>
+    <span class="landing-hero__badge">ساخته‌شده برای سالن‌های زیبایی ایران</span>
+    <h1>سالن‌تان را <span>حرفه‌ای</span> مدیریت کنید</h1>
+    <p class="landing-hero__sub">نوبت، درآمد، نسیه، صندوق، مشتریان و تیم، همه در یک برنامه‌ی فارسی که روی گوشی نصب می‌شود، بدون اینترنت کار می‌کند و داده‌هایتان فقط پیش خودتان می‌ماند.</p>
+    <div class="hero-cta">
+      <a class="btn-land btn-land--gold" href="#installBox">نصب برنامه</a>
+      <a class="btn-land btn-land--ghost" href="dashboard.html">ورود مستقیم و امتحان</a>
+    </div>
+    <div class="trust"><span>کاملاً آفلاین</span><span>بدون سرور و ثبت‌نام</span><span>تقویم و تاریخ شمسی</span><span>ریال، فارسی و راست‌چین</span></div>
 
     <div class="mockup" aria-hidden="true">
       <div class="mockup__bar"><span></span><span></span><span></span></div>
       <div class="mockup__kpis">
-        <div class="mockup__kpi"><small>درآمد امروز</small><b>۲۴,۰۰۰,۰۰۰</b></div>
-        <div class="mockup__kpi"><small>سود واقعی</small><b>۹,۸۰۰,۰۰۰</b></div>
-        <div class="mockup__kpi"><small>مشتری VIP</small><b>۱۲</b></div>
+        <div class="mockup__kpi"><small>درآمد این ماه</small><b>۹۵,۲۰۰,۰۰۰</b></div>
+        <div class="mockup__kpi"><small>سود واقعی</small><b>۲۴,۲۰۰,۰۰۰</b></div>
+        <div class="mockup__kpi"><small>مطالبات معوق</small><b>۱۲,۵۰۰,۰۰۰</b></div>
         <div class="mockup__kpi"><small>نوبت امروز</small><b>۷</b></div>
       </div>
-      <div class="mockup__chart">
-        <i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i>
-        <i style="height:80%"></i><i style="height:60%"></i><i style="height:90%"></i>
+      <div class="mockup__row">
+        <div class="mockup__chart"><i style="height:40%"></i><i style="height:65%"></i><i style="height:50%"></i><i style="height:80%"></i><i style="height:60%"></i><i style="height:90%"></i></div>
+        <div class="mockup__tl"><i class="a">رنگ ریشه ۱۰:۰۰</i><i class="b">مانیکور</i><i class="c">کراتین</i></div>
       </div>
     </div>
   </div>
 
+  <h2 class="section-title">دفتر کاغذی و اکسل کم می‌آورند</h2>
+  <p class="section-sub">این‌ها همان چیزهایی‌اند که هر ماه از دست سالن‌دارها می‌رود.</p>
+  <div class="pains">
+    <div class="pain"><b>نسیه فراموش می‌شود</b><p>مشتری «بعداً حساب می‌کنم» می‌گوید و ماه بعد هیچ‌کس یادش نیست.</p></div>
+    <div class="pain"><b>سود واقعی معلوم نیست</b><p>درآمد را می‌بینید، اما بعد از پورسانت و هزینه‌ها چقدر می‌ماند؟</p></div>
+    <div class="pain"><b>نوبت‌ها تداخل دارند</b><p>دو مشتری برای یک همکار در یک ساعت، یا نوبت روز تعطیل.</p></div>
+  </div>
+
+  <h2 class="section-title">همه‌چیز در یک برنامه</h2>
+  <p class="section-sub">از اولین نوبت تا بستن صندوق آخر شب.</p>
   <div class="features">
-    <div class="feature-card"><div class="feature-card__icon">💰</div><h3>سود واقعی، نه فقط درآمد</h3><p>درآمد منهای کمیسیون تیم و هزینه‌ها — شفاف و لحظه‌ای.</p></div>
-    <div class="feature-card"><div class="feature-card__icon">📅</div><h3>نوبت‌دهی هوشمند</h3><p>تقویم شمسی، جلوگیری از تداخل، اتصال خودکار به درآمد.</p></div>
-    <div class="feature-card"><div class="feature-card__icon">💎</div><h3>باشگاه مشتریان</h3><p>سطح‌بندی خودکار طلایی/نقره‌ای/برنزی و پیگیری مشتریان غیرفعال.</p></div>
-    <div class="feature-card"><div class="feature-card__icon">👥</div><h3>عملکرد تیم سالن</h3><p>کمیسیون، سهم سالن و رشد هر عضو تیم، ماه به ماه.</p></div>
-    <div class="feature-card"><div class="feature-card__icon">📊</div><h3>تحلیل عملکرد</h3><p>سودآوری هر خدمت، سگمنت مشتریان، خروجی اکسل.</p></div>
-    <div class="feature-card"><div class="feature-card__icon">📱</div><h3>نصب روی گوشی</h3><p>مثل یک اپلیکیشن واقعی، بدون نیاز به استور یا اینترنت.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="m8 15 3.5-4 3 2.5L20 7"/></svg></div><h3>سود واقعی، نه فقط درآمد</h3><p>درآمد منهای پورسانت تیم و هزینه‌ها؛ هر ماه دقیقاً می‌دانید چقدر در جیب سالن مانده.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3v3.6M16 3v3.6"/><path d="M8 14h3M13 14h3M8 17.2h3"/></svg></div><h3>نوبت‌دهی با تقویم زمانی</h3><p>ستون هر همکار، ساعت‌به‌ساعت. روی خانه‌ی خالی بزنید تا نوبت ثبت شود؛ تداخل و روز تعطیل را خودش نشان می‌دهد.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6.5" width="18" height="12.5" rx="2"/><path d="M3 10.2h18"/><path d="M7 15h4"/></svg></div><h3>نسیه، تخفیف و پرداخت ترکیبی</h3><p>نقد + کارت در یک تراکنش، تخفیف درصدی، ثبت بدهی و دریافت قسط‌به‌قسط. دیگر هیچ نسیه‌ای فراموش نمی‌شود.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="18" height="11" rx="2"/><path d="M6 9V6.5A1.5 1.5 0 0 1 7.5 5h9A1.5 1.5 0 0 1 18 6.5V9"/><path d="M8 14.5h8"/></svg></div><h3>بستن صندوق روزانه</h3><p>دریافتی نقد، کارت و آنلاین هر روز را با موجودی واقعی صندوق تطبیق دهید و کسری یا اضافه را همان شب ببینید.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8.2" r="3.1"/><path d="M3.3 19.5c0-3.4 2.5-5.7 5.7-5.7s5.7 2.3 5.7 5.7"/><path d="M16 8h5M16 12h5M17 16h4"/></svg></div><h3>پرونده مشتری و فرمول رنگ</h3><p>فرمول رنگ، اکسیدان، زمان و حساسیت‌ها کنار تاریخچه‌ی کامل هر مشتری؛ دفعه‌ی بعد دقیقاً همان نتیجه.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5H18v3"/><rect x="3" y="8" width="18" height="11.5" rx="2.2"/><circle cx="16.5" cy="13.8" r="1.3"/></svg></div><h3>بسته‌های چندجلسه‌ای و کیف پول</h3><p>«۶ جلسه لیزر» بفروشید، جلسه‌ها را کم کنید و پیش‌پرداخت مشتری را در کیف پول نگه دارید.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5.5h16a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5h-8l-4.5 3.5v-3.5H4A1.5 1.5 0 0 1 2.5 15.5V7A1.5 1.5 0 0 1 4 5.5Z"/><path d="M7.5 10h9M7.5 13h5.5"/></svg></div><h3>پیام و رسید تصویری</h3><p>یادآوری نوبت، تبریک تولد و دعوت مشتریان غایب با یک لمس؛ رسید زیبا را مستقیم در روبیکا، تلگرام یا واتساپ بفرستید.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3.2 2.4-5.3 5.5-5.3"/><rect x="12" y="11" width="8.5" height="8.5" rx="1.6"/><path d="M12 14.3h8.5M15 9.8v2.5M17.5 9.8v2.5"/></svg></div><h3>تیم: برنامه، پورسانت و حقوق</h3><p>روزهای کاری هر همکار، پورسانت خودکار و فیش حقوق تصویری با پاداش و مساعده.</p></div>
+    <div class="feature-card"><div class="feature-card__icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 8 12 4l8.5 4v8.5L12 20.5 3.5 16.5Z"/><path d="M3.5 8 12 12l8.5-4M12 12v8.5"/></svg></div><h3>انبار و هشدار کمبود</h3><p>موجودی رنگ و مواد مصرفی را نگه دارید و قبل از تمام شدن هشدار بگیرید.</p></div>
+  </div>
+  <div class="also"><span>باشگاه مشتریان طلایی/نقره‌ای/برنزی</span><span>گزارش و خروجی اکسل</span><span>قفل برنامه با رمز و اثر انگشت</span><span>نسخه پشتیبان و بازیابی</span><span>جستجوی سراسری</span><span>داده‌ی نمونه برای امتحان</span></div>
+
+  <h2 class="section-title">شروع در سه قدم</h2>
+  <p class="section-sub">برای راه‌اندازی به برنامه‌نویس یا اینترنت نیازی نیست.</p>
+  <div class="steps">
+    <div class="step"><b>نصب روی گوشی</b><p>برنامه را مثل یک اپ واقعی به صفحه‌ی اصلی اضافه کنید.</p></div>
+    <div class="step"><b>داده‌ی نمونه یا شروع از صفر</b><p>با یک دکمه نمونه ببینید، با یک دکمه پاکش کنید و اطلاعات خودتان را وارد کنید.</p></div>
+    <div class="step"><b>هر روز، چند لمس</b><p>نوبت بگیرید، حساب کنید، صندوق را ببندید و گزارش ماه را ببینید.</p></div>
+  </div>
+
+  <div class="privacy">
+    <div style="color:var(--accent-gold)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></div>
+    <div><h3>داده‌های شما فقط روی دستگاه شماست</h3><p>اطلاعات مشتریان و حساب‌های سالن روی هیچ سروری ذخیره نمی‌شود. می‌توانید برنامه را قفل کنید و هر زمان یک نسخه‌ی پشتیبان بگیرید یا به گوشی دیگر منتقل کنید.</p></div>
+  </div>
+
+  <div class="faq">
+    <h2 class="section-title">سؤال‌های رایج</h2>
+    <details><summary>بدون اینترنت هم کار می‌کند؟</summary><p>بله. بعد از اولین باز شدن، همه‌ی بخش‌ها آفلاین کار می‌کنند.</p></details>
+    <details><summary>اطلاعات کجا ذخیره می‌شود؟</summary><p>داخل مرورگر همان دستگاه. برای جابه‌جایی یا اطمینان، از نسخه‌ی پشتیبان در تنظیمات استفاده کنید.</p></details>
+    <details><summary>می‌شود روی چند گوشی استفاده کرد؟</summary><p>داده‌ها بین دستگاه‌ها خودکار همگام نمی‌شوند. با نسخه‌ی پشتیبان می‌توانید اطلاعات را به دستگاه دیگر منتقل کنید.</p></details>
+    <details><summary>روی آیفون هم نصب می‌شود؟</summary><p>بله، از سافاری با گزینه‌ی «Add to Home Screen». راهنمای قدم‌به‌قدم پایین همین صفحه نمایش داده می‌شود.</p></details>
   </div>
 
   <div class="install-box" id="installBox">
     <h2>آماده شروع هستید؟</h2>
     <p id="installBoxSubtitle">برنامه را روی گوشی یا کامپیوترتان نصب کنید تا مثل یک اپ واقعی باز شود.</p>
     <div id="installArea">
-      <button class="install-btn install-btn--primary" id="installActionBtn" style="display:none;">📲 نصب برنامه</button>
-      <a class="install-btn install-btn--enter" id="enterAppBtn" href="dashboard.html" style="display:none;">🚀 ورود به داشبورد</a>
+      <button class="install-btn install-btn--primary" id="installActionBtn" style="display:none;">نصب برنامه</button>
+      <a class="install-btn install-btn--enter" id="enterAppBtn" href="dashboard.html" style="display:none;">ورود به داشبورد</a>
       <div class="guide-steps" id="guideSteps" style="display:none;"></div>
       <a class="enter-plain-link" href="dashboard.html">یا بدون نصب، مستقیم وارد داشبورد شوید ←</a>
     </div>

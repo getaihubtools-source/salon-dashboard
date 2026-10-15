@@ -30,6 +30,7 @@
         <div class="page-header__subtitle">مدیریت رزرو نوبت‌ها و جلوگیری از تداخل زمانی اعضای تیم</div>
       </div>
       <div style="display:flex;align-items:center;gap:8px;">
+        <span id="viewToggleSlot"></span>
         <button class="btn btn-primary" onclick="addAppointment()">+ افزودن نوبت</button>
       </div>
     </div>
@@ -54,8 +55,10 @@
 <script src="js/utils.js"></script>
 <script src="js/db.js"></script>
 <script src="js/components.js"></script>
+<script src="js/extras.js"></script>
 <script src="js/datepicker.js"></script>
 <script src="js/appointments.js"></script>
+<script src="js/appt-timeline.js"></script>
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

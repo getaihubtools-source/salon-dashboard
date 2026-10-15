@@ -4,20 +4,23 @@
    هیچ دسترسی و دخالتی ندارد — آن API کاملاً جداست و اینجا لمس نمی‌شود.
    ========================================================================== */
 
-const CACHE_NAME = 'salon-dashboard-shell-v13';
+const CACHE_NAME = 'salon-dashboard-shell-v20';
 
 const APP_SHELL = [
   './',
   'index.html', 'dashboard.html', 'customers.html', 'employees.html', 'employee-detail.html',
   'services.html', 'appointments.html', 'income.html', 'expenses.html',
-  'reports.html', 'settings.html',
+  'reports.html', 'messages.html',
+  'cashbox.html', 'customer-detail.html', 'settings.html',
   'css/variables.css', 'css/layout.css', 'css/tables.css', 'css/components.css', 'css/charts.css',
   'js/license.js', 'js/applock.js', 'js/applock-settings.js',
   'js/utils.js', 'js/db.js', 'js/components.js', 'js/charts.js', 'js/datepicker.js',
   'js/customers.js', 'js/employees.js', 'js/employee-detail.js', 'js/services.js',
   'js/appointments.js', 'js/income.js', 'js/expenses.js', 'js/reports.js',
-  'js/settings.js', 'js/dashboard.js',
-  'manifest.json', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png'
+  'js/settings.js', 'js/dashboard.js', 'js/messages.js',
+  'js/cashbox.js', 'staff.html', 'js/staff.js', 'inventory.html', 'js/inventory.js', 'js/extras.js', 'js/appt-timeline.js', 'js/customer-detail.js', 'js/receipt.js',
+  'manifest.json', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png',
+  'assets/icons/icon-maskable-192.png', 'assets/icons/icon-maskable-512.png', 'assets/icons/apple-touch-icon.png'
 ];
 
 self.addEventListener('install', (event) => {

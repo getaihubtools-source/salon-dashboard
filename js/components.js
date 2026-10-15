@@ -10,6 +10,10 @@ const NAV_ICONS = {
   employees: '<rect x="4" y="4.5" width="16" height="15" rx="2.2"/><circle cx="12" cy="10.3" r="2.3"/><path d="M8 17c.6-1.9 2-2.9 4-2.9s3.4 1 4 2.9"/>',
   services: '<path d="M12 2.5c.7 3.6 2.4 6.4 5 8.3-2.6 1.9-4.3 4.7-5 8.3-.7-3.6-2.4-6.4-5-8.3 2.6-1.9 4.3-4.7 5-8.3Z"/>',
   appointments: '<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 9.5h17M8 3v3.6M16 3v3.6"/><path d="M8.3 13.6l2 2 4-4"/>',
+  staff: '<circle cx="9" cy="8" r="3"/><path d="M3.5 19c0-3.2 2.4-5.3 5.5-5.3"/><rect x="12" y="11" width="8.5" height="8.5" rx="1.6"/><path d="M12 14.3h8.5M15 9.8v2.5M17.5 9.8v2.5"/>',
+  inventory: '<path d="M3.5 8 12 4l8.5 4v8.5L12 20.5 3.5 16.5Z"/><path d="M3.5 8 12 12l8.5-4M12 12v8.5"/>',
+  cashbox: '<rect x="3" y="9" width="18" height="11" rx="2"/><path d="M6 9V6.5A1.5 1.5 0 0 1 7.5 5h9A1.5 1.5 0 0 1 18 6.5V9"/><path d="M8 14.5h8"/>',
+  messages: '<path d="M4 5.5h16a1.5 1.5 0 0 1 1.5 1.5v8.5a1.5 1.5 0 0 1-1.5 1.5h-8l-4.5 3.5v-3.5H4A1.5 1.5 0 0 1 2.5 15.5V7A1.5 1.5 0 0 1 4 5.5Z"/><path d="M7.5 10h9M7.5 13h5.5"/>',
   income: '<rect x="3" y="6.5" width="18" height="12.5" rx="2"/><path d="M3 10.2h18"/><circle cx="16.5" cy="14.4" r="1.4"/>',
   expenses: '<path d="M6 3.5h9l3 3v14l-2-1.3-2 1.3-2-1.3-2 1.3-2-1.3-2 1.3V6a2.5 2.5 0 0 1 .5-1.5"/><path d="M8.5 10h7M8.5 13.4h7M8.5 16.8h4"/>',
   reports: '<path d="M4 20V10M11 20V4M18 20v-7"/><path d="M2.5 20h19"/>',
@@ -29,6 +33,8 @@ const ACTION_ICONS = {
   refund: '<path d="M4.5 10h9.5a5 5 0 1 1 0 10h-2.3"/><path d="M8 6 4.5 10 8 14"/>',
   deposit: '<rect x="3" y="7" width="18" height="11" rx="2.2"/><circle cx="12" cy="12.5" r="2.3"/>',
   warning: '<path d="M12 3.8 2.3 20.5h19.4Z"/><path d="M12 9.8v4.3"/><circle cx="12" cy="17.2" r="1" fill="currentColor" stroke="none"/>',
+  receipt: '<path d="M6 3.5h12v17l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4Z"/><path d="M9 8.5h6M9 12h6M9 15.5h3.5"/>',
+  share: '<circle cx="6.5" cy="12" r="2.3"/><circle cx="17.5" cy="6" r="2.3"/><circle cx="17.5" cy="18" r="2.3"/><path d="M8.5 10.9 15.5 7M8.5 13.1l7 3.9"/>',
   backup: '<path d="M12 4v11"/><path d="M7.3 10.7 12 15.3l4.7-4.6"/><path d="M5 19.3h14"/>',
   fingerprint: '<path d="M12 4.5a6.5 6.5 0 0 1 6.5 6.5c0 1.8-.3 3.4-.9 4.9"/><path d="M12 4.5a6.5 6.5 0 0 0-6.5 6.5c0 2.3.5 4.3 1.4 6"/><path d="M12 7.8a3.2 3.2 0 0 1 3.2 3.2c0 2.6-.6 4.9-1.7 6.8"/><path d="M12 7.8a3.2 3.2 0 0 0-3.2 3.2c0 1.6.2 3.1.6 4.4"/><path d="M12 11c.6 0 1 .4 1 1 0 2.9-.9 5.5-2.4 7.7"/>'
 };
@@ -43,8 +49,12 @@ const NAV_ITEMS = [
   { key: 'employees',    label: 'تیم سالن',     href: 'employees.html' },
   { key: 'services',     label: 'خدمات',        href: 'services.html' },
   { key: 'appointments', label: 'نوبت‌ها',       href: 'appointments.html' },
+  { key: 'messages',     label: 'پیام به مشتری', href: 'messages.html' },
   { key: 'income',       label: 'درآمد',        href: 'income.html' },
   { key: 'expenses',     label: 'هزینه‌ها',     href: 'expenses.html' },
+  { key: 'staff',        label: 'برنامه و حقوق', href: 'staff.html' },
+  { key: 'inventory',    label: 'انبار',        href: 'inventory.html' },
+  { key: 'cashbox',      label: 'صندوق روزانه', href: 'cashbox.html' },
   { key: 'reports',      label: 'تحلیل عملکرد', href: 'reports.html' },
   { key: 'settings',     label: 'تنظیمات',      href: 'settings.html' }
 ];
@@ -764,3 +774,12 @@ function initCustomerSearchField(selectedId) {
     if (!dropdown.contains(e.target) && e.target !== input) dropdown.classList.remove('is-open');
   });
 }
+
+
+/* درخواست «ذخیره‌سازی پایدار» از مرورگر: بدون آن، مرورگر در کمبود حافظه ممکن است
+   داده‌ی سایت (کل اطلاعات سالن) را پاک کند. اگر مرورگر نپذیرفت، بدون خطا رد می‌شود. */
+(function () {
+  try {
+    if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  } catch (e) {}
+})();

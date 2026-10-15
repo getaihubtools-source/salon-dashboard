@@ -59,11 +59,13 @@ function renderCustomerTable() {
     pageSize: responsivePageSize(8),
     rerenderFnName: 'renderCustomerTable',
     columns: [
-      { key: 'name', label: 'نام', mobilePrimary: true },
+      { key: 'name', label: 'نام', mobilePrimary: true, render: c => `<a href="customer-detail.html?id=${c.id}" style="color:var(--accent-gold)">${c.name}</a>` },
       { key: 'phone', label: 'تلفن' },
       { key: 'lastVisit', label: 'آخرین مراجعه', hideOnMobile: true },
       { key: 'visitCount', label: 'تعداد مراجعه', hideOnMobile: true },
       { key: 'totalSpent', label: 'مجموع خرید', render: c => formatCurrency(c.totalSpent), hideOnMobile: true },
+      { key: 'wallet', label: 'کیف پول', render: c => { const w = walletBalance(c.id); return w ? formatCurrency(w) : '—'; }, hideOnMobile: true },
+      { key: 'debt', label: 'بدهی', render: c => { const d = customerDebt(c.id); return d ? `<span class="debt-badge">${formatCurrency(d)}</span>` : '—'; }, hideOnMobile: true },
       { key: 'loyaltyTier', label: 'سطح', render: c => renderLoyaltyBadge(c.loyaltyTier) },
       { key: 'notes', label: 'یادداشت', render: c => `<span class="js-notes-cell" data-id="${c.id}">${c.notes || '—'}</span>`, hideOnMobile: true }
     ],

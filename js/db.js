@@ -17,6 +17,13 @@ function _defaultDB() {
     appointments: [],
     transactions: [],
     expenses: [],
+    payrollAdjustments: [], // پاداش / کسر / مساعده ماهانه همکاران
+    inventory: [],          // انبار سبک
+    inventoryLog: [],       // گردش انبار
+    customerNotes: [],    // پرونده فنی مشتری: فرمول رنگ، خدمت، یادداشت
+    customerPackages: [], // بسته‌های چندجلسه‌ای مشتری
+    cashClosings: [], // بستن صندوق روزانه
+    messageLog: [],   // ثبت پیام‌های ارسال‌شده (برای جلوگیری از پیام تکراری)
     settings: {
       salon: { name: 'سالن زیبایی من', owner: '', phone: '', address: '' },
       loyaltyThresholds: {
@@ -218,6 +225,33 @@ function exportBackup() {
   return filename;
 }
 
+/**
+ * ارسال مستقیم فایل بکاپ از طریق منوی اشتراک‌گذاری گوشی (روبیکا، تلگرام، ایتا، واتساپ، ذخیره در فایل‌ها ...)
+ * اگر مرورگر اشتراک فایل را پشتیبانی نکند، مثل قبل فایل دانلود می‌شود.
+ */
+async function shareBackup() {
+  const dateStr = typeof todayJalali === 'function' ? todayJalali().replace(/\//g, '-') : new Date().toISOString().slice(0, 10);
+  const json = JSON.stringify(getDB(), null, 2);
+  const name = `beautySalon_backup_${dateStr}.json`;
+  const candidates = [
+    new File([json], name, { type: 'application/json' }),
+    new File([json], name, { type: 'text/plain' })
+  ];
+  try {
+    for (const file of candidates) {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'نسخه پشتیبان مدیریار سالن' });
+        updateSettings({ lastBackupDate: new Date().toISOString() });
+        return { ok: true, shared: true };
+      }
+    }
+  } catch (e) {
+    if (e && e.name === 'AbortError') return { ok: false, cancelled: true };
+  }
+  exportBackup(); // جایگزین: دانلود معمولی
+  return { ok: true, shared: false };
+}
+
 function importBackup(fileObject) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -278,4 +312,74 @@ function getPreviousMonthRange() {
 function calcGrowthPercent(current, previous) {
   if (!previous || previous <= 0) return null;
   return Math.round(((current - previous) / previous) * 1000) / 10;
+}
+
+
+/* ==========================================================================
+   پرداخت‌ها و بدهی (نسیه) روی تراکنش‌های درآمد
+   مدل: tx.amount = مبلغ نهایی قابل پرداخت (بعد از تخفیف) → همه‌ی محاسبات درآمد/گزارش‌ها
+   مثل قبل بدون تغییر کار می‌کنند. فیلدهای اختیاری جدید: tx.discount و tx.payments
+   ([{date, method, amount}]). تراکنش‌های قدیمی که payments ندارند «کاملاً پرداخت‌شده در
+   تاریخ خودشان» حساب می‌شوند، پس هیچ داده‌ی قدیمی نیاز به مهاجرت ندارد.
+   ========================================================================== */
+function txPayments(tx) {
+  if (!tx || tx.type === 'refund') return [];
+  if (Array.isArray(tx.payments)) return tx.payments;
+  return [{ date: tx.date, method: tx.paymentMethod || 'cash', amount: Number(tx.amount || 0) }];
+}
+function txPaid(tx) { return txPayments(tx).reduce((s, p) => s + Number(p.amount || 0), 0); }
+function txDebt(tx) {
+  if (!tx || tx.type === 'refund') return 0;
+  return Math.max(Number(tx.amount || 0) - txPaid(tx), 0);
+}
+function customerDebt(customerId) {
+  return getAll('transactions').filter(t => t.type === 'income' && t.customerId === customerId).reduce((s, t) => s + txDebt(t), 0);
+}
+function totalReceivables() {
+  return getAll('transactions').filter(t => t.type === 'income').reduce((s, t) => s + txDebt(t), 0);
+}
+function addTxPayment(txId, payment) {
+  const tx = getById('transactions', txId);
+  if (!tx) return null;
+  const payments = txPayments(tx).map(p => ({ ...p }));
+  payments.push(payment);
+  return update('transactions', txId, { payments });
+}
+
+
+/* ==========================================================================
+   کیف پول و بسته‌ها
+   - شارژ کیف پول = تراکنش type:'topup' (ورودی نقدینگی، نه درآمد)
+   - مصرف از کیف پول = یک پرداخت با method:'wallet' روی تراکنش درآمد
+   - موجودی = جمع شارژها − جمع پرداخت‌های wallet (جدول جدا لازم نیست)
+   - فروش بسته = تراکنش درآمد با category:'package' + رکورد در customerPackages
+   ========================================================================== */
+function walletBalance(customerId, excludeTxId) {
+  let bal = 0;
+  getAll('transactions').forEach(t => {
+    if (t.customerId !== customerId) return;
+    if (t.type === 'topup') bal += Number(t.amount || 0);
+    else if (t.type === 'income' && t.id !== excludeTxId) {
+      txPayments(t).forEach(p => { if (p.method === 'wallet') bal -= Number(p.amount || 0); });
+    }
+  });
+  return bal;
+}
+function packageRemaining(pkg) { return Math.max(Number(pkg.totalSessions || 0) - Number(pkg.usedSessions || 0), 0); }
+function customerPackagesRemaining(customerId) {
+  return getAll('customerPackages').filter(p => p.customerId === customerId).reduce((s, p) => s + packageRemaining(p), 0);
+}
+
+
+/* ==========================================================================
+   برنامه کاری همکاران: emp.schedule = { 0..6: {on, start, end} } (کلید = getDay جاوااسکریپت: 0 یکشنبه … 6 شنبه)
+   اگر تعریف نشده باشد: همه‌ی روزها کاری به‌جز جمعه، با ساعت کاری سالن.
+   ========================================================================== */
+function employeeDaySchedule(emp, dateStr) {
+  const bh = (getSettings().businessHours) || { startHour: 9, endHour: 22 };
+  const d = fromJalali(dateStr);
+  const dow = d ? d.getDay() : 0;
+  const def = { on: dow !== 5, start: `${String(bh.startHour).padStart(2, '0')}:00`, end: `${String(bh.endHour).padStart(2, '0')}:00` };
+  const cfg = emp && emp.schedule && emp.schedule[dow];
+  return cfg ? { on: !!cfg.on, start: cfg.start || def.start, end: cfg.end || def.end } : def;
 }
