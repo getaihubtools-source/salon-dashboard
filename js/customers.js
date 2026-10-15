@@ -71,6 +71,7 @@ function renderCustomerTable() {
     ],
     rows,
     rowActions: (c) => `
+      <a class="icon-btn" href="customer-detail.html?id=${c.id}" title="پرونده مشتری">${_actionIconSvg('folder')}</a>
       <button class="icon-btn" onclick="editCustomer(${c.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
       <button class="icon-btn danger" onclick="deleteCustomer(${c.id})" title="حذف">${_actionIconSvg('delete')}</button>
     `,

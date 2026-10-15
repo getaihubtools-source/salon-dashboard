@@ -99,24 +99,27 @@ function renderEmployeeServiceBreakdown(id) {
 
 function renderEmployeeTransactionsTable(id) {
   const rows = query('transactions', t => t.employeeId === id)
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .slice(0, 15);
+    .sort((a, b) => (a.date < b.date ? 1 : -1));
 
   const services = getAll('services');
   const customers = getAll('customers');
 
   renderDataTable({
     containerId: 'transactionsTableSlot',
+    pageSize: 8,
+    rerenderFnName: 'renderEmployeeTransactionsPage',
     columns: [
       { key: 'date', label: 'تاریخ' },
       { key: 'customerId', label: 'مشتری', render: t => { const c = customers.find(x => x.id === t.customerId); return c ? c.name : '—'; } },
       { key: 'serviceId', label: 'خدمت', render: t => { const s = services.find(x => x.id === t.serviceId); return s ? s.name : '—'; } },
       { key: 'amount', label: 'مبلغ', render: t => formatCurrency(t.amount) },
-      { key: 'paymentMethod', label: 'روش پرداخت' }
+      { key: 'paymentMethod', label: 'روش پرداخت', render: t => ({ cash: 'نقد', card: 'کارت', online: 'آنلاین', wallet: 'کیف پول' }[t.paymentMethod] || t.paymentMethod || '—') }
     ],
     rows,
     emptyTitle: 'تراکنشی برای این همکار ثبت نشده'
   });
 }
+
+function renderEmployeeTransactionsPage() { renderEmployeeTransactionsTable(_getEmployeeIdFromUrl()); }
 
 document.addEventListener('DOMContentLoaded', loadEmployeeProfile);

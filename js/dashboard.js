@@ -41,8 +41,8 @@ function renderDashHeader() {
     </div>
     <div class="dash-header__actions">
       <div class="dash-header__icon-row">
-        ${globalSearchButtonHtml()}
         <a class="icon-btn" href="settings.html" title="تنظیمات">${_navIconSvg('settings', 18)}</a>
+        ${globalSearchButtonHtml()}
         <button class="btn btn-primary dash-header__backup-btn" onclick="_backupFromDashboard()" title="تهیه نسخه پشتیبان">${_actionIconSvg('backup', 15)}<span class="dash-header__backup-label dash-header__backup-label--full">تهیه نسخه پشتیبان</span><span class="dash-header__backup-label dash-header__backup-label--short">پشتیبان‌گیری</span></button>
       </div>
       <div id="backupReminderSlot" class="dash-header__reminder"></div>

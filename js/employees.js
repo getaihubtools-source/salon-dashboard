@@ -93,6 +93,7 @@ function renderEmployeeTable() {
     ],
     rows,
     rowActions: (e) => `
+      <a class="icon-btn" href="employee-detail.html?id=${e.id}" title="پروفایل همکار">${_actionIconSvg('profile')}</a>
       <button class="icon-btn" onclick="editEmployee(${e.id})" title="ویرایش">${_actionIconSvg('edit')}</button>
       <button class="icon-btn danger" onclick="deleteEmployee(${e.id})" title="حذف">${_actionIconSvg('delete')}</button>
     `,
