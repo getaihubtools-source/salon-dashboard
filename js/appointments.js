@@ -179,7 +179,7 @@ function renderAppointmentsList() {
 
   const columns = [
     ...(_apptState.mode === 'week' ? [{ key: 'date', label: 'تاریخ' }] : []),
-    { key: 'time', label: 'ساعت', render: a => { const svc = services.find(s => s.id === a.serviceId); const end = svc ? _calcEndTime(a.time, svc.duration) : ''; return end ? `${a.time} - ${end}` : a.time; } },
+    { key: 'time', label: 'ساعت', render: a => { const svc = services.find(s => s.id === a.serviceId); const end = svc ? _calcEndTime(a.time, svc.duration) : ''; return end ? `<bdi dir="ltr">${a.time} - ${end}</bdi>` : a.time; } },
     { key: 'customerId', label: 'مشتری', render: a => { const c = customers.find(x => x.id === a.customerId); return c ? c.name : '—'; } },
     { key: 'serviceId', label: 'خدمت', render: a => { const s = services.find(x => x.id === a.serviceId); return s ? s.name : '—'; } },
     { key: 'employeeId', label: 'متخصص', render: a => { const e = employees.find(x => x.id === a.employeeId); return e ? e.name : '—'; } },

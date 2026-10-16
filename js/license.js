@@ -98,16 +98,28 @@ function _isLicenseActive() {
   return localStorage.getItem('activation_status') === 'active' && !!localStorage.getItem('license_key');
 }
 
+function _lockContentUntilActive() {
+  // تا قبل از فعال‌سازی، محتوای برنامه حتی یک لحظه هم زیر گیت دیده نشود
+  if (document.getElementById('licenseLockStyle')) return;
+  const st = document.createElement('style');
+  st.id = 'licenseLockStyle';
+  st.textContent = '.app-shell, #sidebarSlot, .bottom-nav { visibility: hidden !important; }';
+  document.head.appendChild(st);
+}
+function _unlockContent() { const st = document.getElementById('licenseLockStyle'); if (st) st.remove(); }
+
 function initLicenseGate() {
   if (_isLicenseActive()) {
+    _unlockContent();
     // لایسنس معتبر ذخیره‌شده‌ست -> فوراً اجازه ورود (حتی آفلاین)
     if (navigator.onLine) {
       validateLicense().then((res) => {
-        if (res.ok === false) _showLicenseGate(res.message); // فقط رد صریح سرور قفل می‌کنه، نه قطعی شبکه
+        if (res.ok === false) { _lockContentUntilActive(); _showLicenseGate(res.message); } // فقط رد صریح سرور قفل می‌کنه، نه قطعی شبکه
       }).catch(() => {});
     }
     return;
   }
+  _lockContentUntilActive();
   _showLicenseGate();
 }
 
@@ -157,7 +169,7 @@ function _showLicenseGate(prefillError) {
       const result = await activateLicense(code);
       if (result.ok) {
         showMessage('فعال‌سازی با موفقیت انجام شد ✅', 'success');
-        setTimeout(() => overlay.remove(), 700);
+        setTimeout(() => { overlay.remove(); _unlockContent(); }, 700);
       } else {
         showMessage(result.message || 'کد لایسنس نامعتبر است', 'error');
       }
@@ -173,4 +185,5 @@ function _showLicenseGate(prefillError) {
   input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doActivate(); });
 }
 
+try { if (!_isLicenseActive() && document.head) _lockContentUntilActive(); } catch (e) {}
 document.addEventListener('DOMContentLoaded', initLicenseGate);

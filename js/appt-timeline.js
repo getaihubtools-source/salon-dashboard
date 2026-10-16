@@ -64,8 +64,8 @@ function renderApptTimeline() {
       const top = (s - startMin) / step * TL_ROW_H;
       const h = Math.max(dur / step * TL_ROW_H - 2, 22);
       const c = customers.find(x => x.id === a.customerId);
-      return `<div class="tl-block tl-block--${a.status}" style="top:${top}px;height:${h}px" onclick="event.stopPropagation();editAppointment(${a.id})" title="${_calcEndTime(a.time, dur)} – ${a.time}">
-        <b>${_esc(c ? c.name : '—')}</b><span>${_esc(svc ? svc.name : '')}</span><em>${a.time}–${_calcEndTime(a.time, dur)}</em></div>`;
+      return `<div class="tl-block tl-block--${a.status}" style="top:${top}px;height:${h}px" onclick="event.stopPropagation();editAppointment(${a.id})" title="${a.time} – ${_calcEndTime(a.time, dur)}">
+        <b>${_esc(c ? c.name : '—')}</b><span>${_esc(svc ? svc.name : '')}</span><em><bdi dir="ltr">${a.time}–${_calcEndTime(a.time, dur)}</bdi></em></div>`;
     }).join('');
     return `<div class="tl-col"><div class="tl-head ${sch.on ? '' : 'tl-head--off'}">${_esc(emp.name)}${sch.on ? '' : '<small>تعطیل</small>'}</div><div class="tl-body" style="height:${H}px">${cells}${blocks}</div></div>`;
   }).join('');

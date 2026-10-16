@@ -373,13 +373,13 @@ function customerPackagesRemaining(customerId) {
 
 /* ==========================================================================
    برنامه کاری همکاران: emp.schedule = { 0..6: {on, start, end} } (کلید = getDay جاوااسکریپت: 0 یکشنبه … 6 شنبه)
-   اگر تعریف نشده باشد: همه‌ی روزها کاری به‌جز جمعه، با ساعت کاری سالن.
+   اگر تعریف نشده باشد: همه‌ی روزها کاری، با ساعت کاری سالن (روز تعطیل را هر همکار خودش تعیین می‌کند).
    ========================================================================== */
 function employeeDaySchedule(emp, dateStr) {
   const bh = (getSettings().businessHours) || { startHour: 9, endHour: 22 };
   const d = fromJalali(dateStr);
   const dow = d ? d.getDay() : 0;
-  const def = { on: dow !== 5, start: `${String(bh.startHour).padStart(2, '0')}:00`, end: `${String(bh.endHour).padStart(2, '0')}:00` };
+  const def = { on: true, start: `${String(bh.startHour).padStart(2, '0')}:00`, end: `${String(bh.endHour).padStart(2, '0')}:00` };
   const cfg = emp && emp.schedule && emp.schedule[dow];
   return cfg ? { on: !!cfg.on, start: cfg.start || def.start, end: cfg.end || def.end } : def;
 }

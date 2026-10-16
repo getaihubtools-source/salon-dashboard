@@ -4,7 +4,7 @@
    هیچ دسترسی و دخالتی ندارد — آن API کاملاً جداست و اینجا لمس نمی‌شود.
    ========================================================================== */
 
-const CACHE_NAME = 'salon-dashboard-shell-v21';
+const CACHE_NAME = 'salon-dashboard-shell-v23';
 
 const APP_SHELL = [
   './',
@@ -12,13 +12,14 @@ const APP_SHELL = [
   'services.html', 'appointments.html', 'income.html', 'expenses.html',
   'reports.html', 'messages.html',
   'cashbox.html', 'customer-detail.html', 'settings.html',
-  'css/variables.css', 'css/layout.css', 'css/tables.css', 'css/components.css', 'css/charts.css',
+  'assets/vendor/chart.umd.min.js', 'assets/vendor/xlsx.full.min.js', 'css/fonts.css', 'assets/fonts/vazirmatn-arabic-wght-normal.woff2', 'assets/fonts/vazirmatn-latin-wght-normal.woff2', 'css/variables.css', 'css/layout.css', 'css/tables.css', 'css/components.css', 'css/charts.css',
   'js/license.js', 'js/applock.js', 'js/applock-settings.js',
   'js/utils.js', 'js/db.js', 'js/components.js', 'js/charts.js', 'js/datepicker.js',
   'js/customers.js', 'js/employees.js', 'js/employee-detail.js', 'js/services.js',
   'js/appointments.js', 'js/income.js', 'js/expenses.js', 'js/reports.js',
   'js/settings.js', 'js/dashboard.js', 'js/messages.js',
   'js/cashbox.js', 'staff.html', 'js/staff.js', 'inventory.html', 'js/inventory.js', 'js/extras.js', 'js/appt-timeline.js', 'js/customer-detail.js', 'js/receipt.js',
+  'assets/shots/desktop.webp', 'assets/shots/dash.webp', 'assets/shots/cal.webp', 'assets/shots/income.webp', 'assets/shots/cfile.webp', 'assets/shots/cash.webp', 'assets/shots/slip.webp', 'assets/shots/msgs.webp',
   'manifest.json', 'assets/icons/icon-192.png', 'assets/icons/icon-512.png',
   'assets/icons/icon-maskable-192.png', 'assets/icons/icon-maskable-512.png', 'assets/icons/apple-touch-icon.png'
 ];
