@@ -38,10 +38,10 @@ h2{font-size:30px;text-align:center;margin-bottom:10px}
 .top .wrap{display:flex;align-items:center;gap:20px;height:62px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px}
 .brand img{width:34px;height:34px;border-radius:9px}
-.nav{display:flex;gap:4px;margin-inline-start:auto}
+.nav{display:flex;gap:4px;margin-inline-start:12px}
 .nav a{padding:6px 12px;border-radius:8px;color:var(--text-secondary);font-size:14px}
 .nav a:hover{color:var(--accent-gold);background:var(--accent-gold-dim)}
-.top .btn{padding:8px 18px;font-size:14px}
+.top .btn{padding:8px 18px;font-size:14px;margin-inline-start:auto}
 @media(max-width:820px){.nav{display:none}.top .btn{margin-inline-start:auto}}
 
 /* هیرو */
@@ -177,7 +177,7 @@ dialog .btn{margin-top:14px;width:100%}
       <div class="cta">
         <button class="btn pri lg" type="button" data-install>نصب برنامه</button>
       </div>
-      <p class="note">روی موبایل و کامپیوتر نصب می‌شود. استفاده از برنامه فقط با کد فعال‌سازی ممکن است؛ فعال‌سازی اول یک‌بار اینترنت (و در صورت نیاز VPN) می‌خواهد و بعد از آن آفلاین کار می‌کند. <a href="dashboard.html" class="gold" style="text-decoration:underline">قبلاً نصب کرده‌اید؟ ورود به برنامه</a></p>
+      <p class="note" id="heroNote">روی موبایل و کامپیوتر نصب می‌شود. استفاده از برنامه فقط با کد فعال‌سازی ممکن است؛ فعال‌سازی اول یک‌بار اینترنت (و در صورت نیاز VPN) می‌خواهد و بعد از آن آفلاین کار می‌کند.</p>
     </div>
     <div class="vis reveal">
       <div class="laptop"><div class="bar"><i></i><i></i><i></i></div><img src="assets/shots/desktop.webp" alt="داشبورد مدیریار سالن روی کامپیوتر" width="1600" height="1000" /></div>
@@ -239,9 +239,10 @@ dialog .btn{margin-top:14px;width:100%}
     <p class="sub reveal">کمتر از ده دقیقه تا اولین نوبت ثبت‌شده.</p>
     <div class="steps">
       <div class="step reveal"><h3>کد فعال‌سازی بگیرید</h3><p>بعد از خرید، کد اختصاصی خود را از فروشنده دریافت می‌کنید.</p></div>
-      <div class="step reveal"><h3>برنامه را باز کنید</h3><p>روی «ورود به برنامه» بزنید و کد را یک‌بار وارد کنید (نیازمند اینترنت).</p></div>
-      <div class="step reveal"><h3>نصب کنید</h3><p>برنامه را به صفحه اصلی گوشی اضافه کنید تا مثل اپ باز شود.</p></div>
+      <div class="step reveal"><h3>نصب کنید</h3><p>روی «نصب برنامه» بزنید تا روی گوشی یا کامپیوترتان نصب شود.</p></div>
+      <div class="step reveal"><h3>برنامه را باز کنید</h3><p>برنامه نصب‌شده را باز کنید و کد فعال‌سازی را یک‌بار وارد کنید (نیازمند اینترنت).</p></div>
       <div class="step reveal"><h3>سالن را بچینید</h3><p>خدمات، پرسنل و ساعت کاری را وارد کنید؛ یا اول با داده نمونه امتحان کنید.</p></div>
+    </div>
     </div>
   </div>
 </section>
@@ -281,7 +282,7 @@ dialog .btn{margin-top:14px;width:100%}
   <div class="wrap">
     <div class="final reveal">
       <h2>آماده‌اید سالنتان را <span class="gold">مرتب</span> کنید؟</h2>
-      <p>برنامه را نصب کنید، کد فعال‌سازی را وارد کنید و همین امروز شروع کنید.</p>
+      <p id="finalText">برنامه را نصب کنید، کد فعال‌سازی را وارد کنید و همین امروز شروع کنید.</p>
       <div class="cta">
         <button class="btn pri lg" type="button" data-install>نصب برنامه</button>
       </div>
@@ -299,33 +300,76 @@ dialog .btn{margin-top:14px;width:100%}
   function isStandalone() {
     return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
   }
-  // برنامه نصب‌شده: مستقیم به برنامه (قفل فعال‌سازی همان‌جا اعمال می‌شود)
-  if (isStandalone()) { location.replace('dashboard.html'); return; }
+  var KEY = 'modiryar_installed';
+  function getFlag() { try { return localStorage.getItem(KEY) === '1'; } catch (e) { return false; } }
+  function setFlag(v) { try { if (v) localStorage.setItem(KEY, '1'); else localStorage.removeItem(KEY); } catch (e) {} }
 
-  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); deferred = e; });
+  // داخل برنامه نصب‌شده: علامت بزن و مستقیم برو (قفل فعال‌سازی همان‌جا اعمال می‌شود)
+  if (isStandalone()) { setFlag(true); location.replace('dashboard.html'); return; }
 
   var ua = navigator.userAgent || '';
   var ios = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
   var mobile = ios || /Android/i.test(ua);
   var guide = document.getElementById('guideInline');
+  var btns = document.querySelectorAll('[data-install]');
+  var heroNote = document.getElementById('heroNote');
+  var finalText = document.getElementById('finalText');
+  var noteOrig = heroNote.innerHTML, finalOrig = finalText.textContent;
+  var installed = false;
+
   function guideHtml() {
     if (!window.isSecureContext) return '<b>نصب فقط روی آدرس امن (https) ممکن است.</b> لطفاً لینک https برنامه را باز کنید.';
     if (ios) return '<b>نصب روی آیفون/آیپد:</b><ol><li>در سافاری دکمه اشتراک‌گذاری (Share) را بزنید</li><li>«Add to Home Screen» را انتخاب کنید</li><li>روی «Add» بزنید</li></ol>';
     if (mobile) return '<b>نصب روی اندروید:</b><ol><li>روی «نصب برنامه» بزنید و تأیید کنید</li><li>اگر پنجره نصب نیامد: منوی سه‌نقطه مرورگر ← «Install app» یا «Add to Home screen»</li></ol>';
     return '<b>نصب روی کامپیوتر:</b><ol><li>روی «نصب برنامه» بزنید و تأیید کنید</li><li>اگر پنجره نصب نیامد: در Chrome/Edge آیکن نصب سمت راست نوار آدرس (یا منوی ⋮ ← Install) را بزنید</li></ol>';
   }
-  guide.innerHTML = guideHtml();
-  function install() {
+
+  // حالت دکمه‌ها: نصب‌نشده ← «نصب برنامه» | نصب‌شده ← «ورود به برنامه»
+  function setMode(isInstalled) {
+    installed = isInstalled;
+    btns.forEach(function (b) { b.textContent = installed ? 'ورود به برنامه' : 'نصب برنامه'; });
+    if (installed) {
+      guide.style.display = 'none';
+      finalText.textContent = 'برنامه روی این دستگاه نصب شده است. وارد شوید و کد فعال‌سازی را (در اولین ورود) وارد کنید.';
+      heroNote.innerHTML = 'برنامه روی این دستگاه نصب شده است. برای ورود، دکمه بالا را بزنید یا برنامه را از صفحه اصلی/منوی استارت باز کنید. <a href="#" id="reinstall" class="gold" style="text-decoration:underline">برنامه را حذف کرده‌اید؟ نصب دوباره</a>';
+      document.getElementById('reinstall').addEventListener('click', function (e) { e.preventDefault(); setFlag(false); setMode(false); });
+    } else {
+      guide.style.display = '';
+      guide.innerHTML = guideHtml();
+      finalText.textContent = finalOrig;
+      heroNote.innerHTML = noteOrig;
+    }
+  }
+
+  var deferred = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    // این رویداد فقط وقتی می‌آید که برنامه نصب نیست
+    e.preventDefault(); deferred = e;
+    if (installed) { setFlag(false); setMode(false); }
+  });
+  window.addEventListener('appinstalled', function () { deferred = null; setFlag(true); setMode(true); });
+
+  function onClick() {
+    if (installed) { location.href = 'dashboard.html'; return; }
     if (deferred) {
-      deferred.prompt();
-      deferred.userChoice.finally(function () { deferred = null; });
+      var d = deferred;
+      d.prompt();
+      d.userChoice.then(function (c) { if (c && c.outcome === 'accepted') { setFlag(true); setMode(true); } }).catch(function () {});
+      deferred = null;
     } else {
       guide.scrollIntoView({ behavior: 'smooth', block: 'center' });
       guide.style.borderColor = 'var(--accent-gold)';
     }
   }
-  document.querySelectorAll('[data-install]').forEach(function (b) { b.addEventListener('click', install); });
-  window.addEventListener('appinstalled', function () { location.replace('dashboard.html'); });
+  btns.forEach(function (b) { b.addEventListener('click', onClick); });
+  setMode(getFlag());
+
+  // اگر مرورگر اجازه بدهد، نصب‌بودن را مستقیم بپرس
+  if (navigator.getInstalledRelatedApps) {
+    navigator.getInstalledRelatedApps().then(function (apps) {
+      if (apps && apps.length) { setFlag(true); setMode(true); }
+    }).catch(function () {});
+  }
 
   // گالری
   var gal = document.getElementById('gal');
